@@ -1,0 +1,108 @@
+from pathlib import Path
+
+import httpx
+import pandas as pd
+from tqdm import tqdm
+
+
+class Downloader:
+    """
+    Download file from the Nasa Landslide Hazard Assessment for
+    Situational Awareness (LHASA) service.
+
+    Args:
+        base_url (str, optional): The base URL to download the tif files from.
+            Default: https://maps.nccs.nasa.gov/download/landslides/latest/
+    """
+
+    def __init__(
+        self,
+        base_url: str = "https://maps.nccs.nasa.gov/download/landslides/latest/",  # noqa: E501
+    ):
+        self.base_url = base_url
+
+    def run(self) -> None:
+        """Download the today and tomorrow.tif files from the base URL."""
+        metadata = self.read_metadata(self.base_url)
+
+        for tif in ("today.tif", "tomorrow.tif"):
+            last_modified = metadata[metadata["Name"] == tif][
+                "Last modified"
+            ].iloc[0]
+            # replace colons in time with dashes
+            last_modified = last_modified.replace(":", "-")
+
+            self.download_tif(
+                url=f"{self.base_url}{tif}",
+                path=f"{last_modified}_{tif}",
+                verbose=True,
+                overwrite=False,
+            )
+
+        print("Done!")
+
+    @staticmethod
+    def download_tif(
+        url: str,
+        path: str | Path,
+        verbose: bool = True,
+        overwrite: bool = False,
+    ) -> None:
+        """
+        Download a tif file from the given url to the given path.
+
+        Args:
+            url (str): The URL to download the tif file from.
+            path (str | Path): The path to save the downloaded tif file.
+            verbose (bool, optional): Print a message after downloading.
+            overwrite (bool, optional): If True, overwrite the file.
+
+        Raises:
+            FileExistsError: If the file already exists and overwrite is False.
+        """
+        path = Path(path)
+        if path.exists() and not overwrite:
+            raise FileExistsError(
+                f"File {path} already exists. Use overwrite=True to "
+                f"overwrite it."
+            )
+
+        with httpx.stream("GET", url) as response:
+            response.raise_for_status()
+            total = int(response.headers.get("content-length", 0))
+            with (
+                path.open("wb") as f,
+                tqdm(
+                    total=total,
+                    unit="iB",
+                    unit_scale=True,
+                    unit_divisor=1024,
+                    desc=path.name,
+                ) as pbar,
+            ):
+                for chunk in response.iter_bytes():
+                    size = f.write(chunk)
+                    pbar.update(size)
+
+        if verbose:
+            print(f"Downloaded {url} to {path}")
+
+    @staticmethod
+    def read_metadata(
+        url: str = "https://maps.nccs.nasa.gov/download/landslides/latest/",
+    ) -> pd.DataFrame:
+        """
+        Read metadata from the latest predictions URL
+        (https://maps.nccs.nasa.gov/download/landslides/latest/).
+
+        Args:
+            url (str): The URL to read the metadata from.
+
+        Returns:
+            pd.DataFrame: The metadata as a pandas DataFrame.
+        """
+        data = pd.read_html(url)
+        # get the first table (only one)
+        data = data[0][["Name", "Last modified", "Size"]]
+
+        return data.dropna(subset="Name")
