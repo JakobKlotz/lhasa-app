@@ -1,9 +1,18 @@
 [project]
 name = "nasa-landslide"
 version = "0.1.0"
-description = "Add your description here"
+description = "Use Nasa LHASA service"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "geopandas>=1.0.1",
+    "httpx>=0.28.1",
+    "lxml>=5.3.1",
+    "matplotlib>=3.10.0",
     "pandas>=2.2.3",
+    "plotly>=6.0.0",
+    "rasterio>=1.4.3",
+    "seaborn>=0.13.2",
+    "shapely>=2.0.7",
+    "tqdm>=4.67.1",
 ]
