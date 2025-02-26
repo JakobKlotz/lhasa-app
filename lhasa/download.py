@@ -21,7 +21,7 @@ class Downloader:
     ):
         self.base_url = base_url
 
-    def run(self) -> None:
+    def run(self, folder: str | Path = "data") -> None:
         """Download the today and tomorrow.tif files from the base URL."""
         metadata = self.read_metadata(self.base_url)
 
