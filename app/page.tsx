@@ -1,7 +1,7 @@
 // app/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import * as React from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import dynamic from 'next/dynamic';
@@ -16,10 +16,12 @@ import {
   Paper,
   LinearProgress,
   Chip,
-  CssBaseline
+  CssBaseline,
 } from '@mui/material';
 import GitHub from '@mui/icons-material/GitHub';
 import DescriptionIcon from '@mui/icons-material/Description';
+import Autocomplete from '@mui/material/Autocomplete';
+import countriesData from './countries.json'; // Import the countries data
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -28,14 +30,10 @@ const theme = createTheme({
     mode: "dark",
     primary: {
       main: '#FF5733',
-      // light: will be calculated from palette.primary.main,
-      // dark: will be calculated from palette.primary.main,
-      // contrastText: will be calculated to contrast with palette.primary.main
     },
     secondary: {
       main: '#E0C2FF',
       light: '#F5EBFF',
-      // dark: will be calculated from palette.secondary.main,
       contrastText: '#47008F',
     },
   },
@@ -46,6 +44,12 @@ export default function Home() {
   const [plotData, setPlotData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [downloading, setDownloading] = useState(false);
+  const [countries, setCountries] = useState([]);
+
+  useEffect(() => {
+    setCountries(countriesData); // Set the countries state with the imported data
+  }, []);
 
   const fetchForecast = async () => {
     try {
@@ -59,6 +63,18 @@ export default function Home() {
       setLoading(false);
     }
   };
+
+  const downloadData = async () => {
+    try {
+      setDownloading(true);
+      const response_dl = await axios.post(`http://localhost:8000/download/`);
+    } catch (err) {
+      setError('Error downloading data');
+    } finally {
+      setDownloading(false);
+    }
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -68,21 +84,62 @@ export default function Home() {
             <h1>LHASA forecast</h1>
           </Box>
           <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
-              <Box sx={{ 
+            <Box sx={{ 
               display: 'flex',
               gap: 2,
               alignItems: 'center',
               }}>
+            
+              <Button
+                variant="contained"
+                onClick={downloadData}
+              >
+                {downloading ? <CircularProgress size={20} color="inherit" /> : 'Download latest data'}
+              </Button>
               
-            <TextField sx={{ color: "primary" }}
-                fullWidth
-                variant="outlined"
-                value={nutsId}
-                onChange={(e) => setNutsId(e.target.value)}
-                label="Enter a Country Code"
-                disabled={loading}
-                size="small"
+              {/* taken from https://mui.com/material-ui/react-autocomplete/#country-select */}
+              <Autocomplete
+                id="country-select-demo"
+                sx={{ width: 400 }}
+                options={countries}
+                autoHighlight
+                getOptionLabel={(option) => option.label}
+                onChange={(e, value) => setNutsId(value?.code)}
+                size="medium"
+                renderOption={(props, option) => {
+                  const { key, ...optionProps } = props;
+                  return (
+                    <Box
+                      key={key}
+                      component="li"
+                      sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
+                      {...optionProps}
+                    >
+                      <img
+                        loading="lazy"
+                        width="20"
+                        srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
+                        src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
+                        alt=""
+                      />
+                      {option.label} ({option.code})
+                    </Box>
+                  );
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Choose a country"
+                    slotProps={{
+                      htmlInput: {
+                        ...params.inputProps,
+                        autoComplete: 'new-password', // disable autocomplete and autofill
+                      },
+                    }}
+                  />
+                )}
               />
+
               <Button
                 variant="contained"
                 onClick={fetchForecast}
@@ -124,11 +181,6 @@ export default function Home() {
             gap: 2
           }}
         >
-          {/* <Avatar 
-            alt="Jakob Klotz" 
-            src="https://avatars.githubusercontent.com/u/177755923?v=4"
-          /> */}
-
           <Chip
             icon={<GitHub />}
             label="GitHub"
