@@ -102,5 +102,8 @@ class ForeCast:
             xaxis_visible=False,
             yaxis_visible=False,
             title=title,
+            plot_bgcolor="black",
+            paper_bgcolor="black",
+            font=dict(color="white"),
         )
         return fig
