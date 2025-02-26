@@ -9,8 +9,13 @@ from shapely import MultiPolygon, Polygon
 from shapely.geometry import mapping
 
 
+def read_nuts(nuts_path: str | Path) -> gpd.GeoDataFrame:
+    """Read NUTS geojson file."""
+    return gpd.read_file(nuts_path)
+
+
 class ForeCast:
-    def __init__(self, *, tif_path: str | Path, nuts_path: str | Path):
+    def __init__(self, *, tif_path: str | Path, nuts: gpd.GeoDataFrame):
         """Visualize LHASA predictions for a given NUTS region.
         NUTS regions can be downloaded from:
         https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics
@@ -20,7 +25,7 @@ class ForeCast:
             nuts_path (str | Path): The path to the NUTS geojson file.
         """
         self.tif_path = Path(tif_path)
-        self.nuts = gpd.read_file(nuts_path)
+        self.nuts = nuts
 
     def plot(self, *, nuts_id: str, title: str) -> go.Figure:
         """Plot the predictions for the given NUTS region.
