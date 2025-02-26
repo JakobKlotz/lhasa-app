@@ -71,10 +71,25 @@ class ForeCast:
                 z=border,
                 showscale=False,
                 contours=dict(start=0, end=1, size=1, coloring="lines"),
+                colorscale=[[0, "white"], [1, "black"]],
+                line=dict(width=2),
             )
         )
         fig.add_trace(
-            go.Heatmap(z=predictions, zmin=0, zmax=1, colorscale="gray_r")
+            go.Heatmap(
+                z=predictions,
+                zmin=0,
+                zmax=1,
+                colorscale=[
+                    [0, "#000000"],  # black for -9999/None
+                    [0.000001, "rgb(0,104,55)"],  # green
+                    [0.5, "rgb(255,255,0)"],  # yellow
+                    [1, "rgb(165,0,38)"],  # red
+                ],
+                colorbar=dict(title="Probability"),
+                zmid=0.5,
+                hovertemplate="Probability: %{z}<extra></extra>",
+            )
         )
         fig.update_layout(
             xaxis_showgrid=False,
