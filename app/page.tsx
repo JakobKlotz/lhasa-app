@@ -29,7 +29,7 @@ const theme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: '#FF5733',
+      main: '#ce93d8',
     },
     secondary: {
       main: '#E0C2FF',
@@ -79,15 +79,16 @@ export default function Home() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Container maxWidth="lg">
-        <Box sx={{ py: 4, justifyContent: "center"}}>
-          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-            <h1>LHASA forecast</h1>
+        <Box sx={{ py: 1, justifyContent: "center" }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
+            <h1>🌏 LHASA forecast</h1>
           </Box>
-          <Paper elevation={3} sx={{ p: 3, mb: 3 }}>
+          <Paper elevation={3} sx={{ p: 1, mb: 1 }}>
             <Box sx={{ 
               display: 'flex',
-              gap: 2,
+              justifyContent: 'center',
               alignItems: 'center',
+              gap: 2,
               }}>
             
               <Button
@@ -150,57 +151,58 @@ export default function Home() {
               </Button>
             </Box>
           </Paper>
+        </Box>
 
-          {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
-
+        <Paper elevation={3} sx={{ p: 1, mb: 1, width: '100%', height: '620px'}}>
+          {error && <Alert severity="error" sx={{ mb: 1 }}>{error}</Alert>}
           {loading && <LinearProgress />}
           {plotData && (
-            <Paper elevation={3}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', height: '100%' }}>
               <Plot
                 data={plotData.data}
                 layout={plotData.layout}
                 config={plotData.config}
-                style={{ width: '100%', height: '600px' }}
-              />
-            </Paper>
+              >
+              </Plot>
+            </Box>
           )}
-        </Box>
-      
-        <Box
-          component="footer"
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            mt: 3,
-            py: 3,
-            borderTop: '1px solid #e0e0e0',
-            position: 'fixed',
-            bottom: 20,
-            width: '65%',
-            gap: 2
-          }}
-        >
-          <Chip
-            icon={<GitHub />}
-            label="GitHub"
-            variant="outlined"
-            clickable
-            component="a"
-            href="https://github.com/JakobKlotz"
-            target="_blank"
-          />
+        </Paper>
 
-          <Chip
-            icon={<DescriptionIcon />}
-            label="License"
-            variant="outlined"
-            clickable
-            component="a"
-            href="https://github.com/nasa/LHASA/blob/master/LICENSE.pdf"
-            target="_blank"
-          />
-        </Box>
+        <Paper elevation={1} sx={{ p: 0, mb: 1 }}>
+
+          <Box
+            component="footer"
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              mt: 2,
+              py: 2,
+              bottom: 0,
+              gap: 2
+            }}
+          >
+            <Chip
+              icon={<GitHub />}
+              label="GitHub"
+              variant="outlined"
+              clickable
+              component="a"
+              href="https://github.com/JakobKlotz"
+              target="_blank"
+            />
+
+            <Chip
+              icon={<DescriptionIcon />}
+              label="License"
+              variant="outlined"
+              clickable
+              component="a"
+              href="https://github.com/nasa/LHASA/blob/master/LICENSE.pdf"
+              target="_blank"
+            />
+          </Box>
+      </Paper>
         
       </Container>
     </ThemeProvider>

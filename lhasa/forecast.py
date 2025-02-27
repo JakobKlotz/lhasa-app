@@ -1,4 +1,3 @@
-import math
 from pathlib import Path
 
 import geopandas as gpd
@@ -87,7 +86,7 @@ class ForeCast:
                 zmin=0,
                 zmax=1,
                 colorscale=[
-                    [0, "#000000"],  # black for -9999/None
+                    [0, "#262626"],  # black for -9999/None
                     [0.000001, "rgb(0,104,55)"],  # green
                     [0.5, "rgb(255,255,0)"],  # yellow
                     [1, "rgb(165,0,38)"],  # red
@@ -98,30 +97,14 @@ class ForeCast:
             )
         )
 
-        # scale the plot size
-        height, width = predictions.shape
-        scale_factor = 1.5
-        # can't exceed 1000x600
-        width, height = (
-            min(width / scale_factor, 1_000),
-            min(height / scale_factor, 600),
-        )
-        width, height = math.floor(width), math.floor(height)
-        # must have at least 400x400
-        width, height = max(width, 400), max(height, 400)
-
-        print(width, height)
         fig.update_layout(
             xaxis_showgrid=False,
             yaxis_showgrid=False,
             xaxis_visible=False,
             yaxis_visible=False,
             title=title,
-            plot_bgcolor="black",
-            paper_bgcolor="black",
+            plot_bgcolor="#262626",
+            paper_bgcolor="#262626",
             font=dict(color="white"),
-            autosize=False,
-            width=width,
-            height=width,
         )
         return fig
