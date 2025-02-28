@@ -25,6 +25,28 @@ const nextConfig = {
         },
       ];
     },
+    outputFileTracingExcludes: {
+      '*': [
+        "**/*.pyc",
+        "**/__pycache__/**",
+        ".env",
+        ".git/**",
+        ".venv/**",
+        "automations/**",
+        "docs/**",
+        "logdir/**",
+        "tests/**",
+        "prisma/migrations/**",
+        "Dockerfile",
+        "README.md",
+        "pytest.ini",
+        "package.json",
+        ".next",
+        "node_modules",
+        ".vercel_cache/**",
+        "env/lib/python*/site-packages/**"
+      ]
+    }
   };
   
   module.exports = nextConfig;
