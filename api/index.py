@@ -17,7 +17,7 @@ nuts: gpd.GeoDataFrame | None = None
 async def lifespan(app: FastAPI):
     global nuts
     try:
-        nuts = read_nuts("data/NUTS_RG_01M_2024_4326.geojson")
+        nuts = read_nuts("data/NUTS_RG_20M_2024_4326.geojson")
         yield
     except Exception as e:
         raise RuntimeError("Failed to load NUTS data") from e
