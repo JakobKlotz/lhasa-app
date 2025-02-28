@@ -1,11 +1,11 @@
 // app/page.tsx
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import * as React from 'react';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import dynamic from 'next/dynamic';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import * as React from "react";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import dynamic from "next/dynamic";
+import axios from "axios";
 import {
   Button,
   TextField,
@@ -17,33 +17,33 @@ import {
   LinearProgress,
   Chip,
   CssBaseline,
-} from '@mui/material';
-import GitHub from '@mui/icons-material/GitHub';
-import DescriptionIcon from '@mui/icons-material/Description';
-import Autocomplete from '@mui/material/Autocomplete';
-import countriesData from './countries.json'; // Import the countries data
+} from "@mui/material";
+import GitHub from "@mui/icons-material/GitHub";
+import DescriptionIcon from "@mui/icons-material/Description";
+import Autocomplete from "@mui/material/Autocomplete";
+import countriesData from "./countries.json"; // Import the countries data
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: true });
+const Plot = dynamic(() => import("react-plotly.js"), { ssr: true });
 
 const theme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: '#ce93d8',
+      main: "#ce93d8",
     },
     secondary: {
-      main: '#E0C2FF',
-      light: '#F5EBFF',
-      contrastText: '#47008F',
+      main: "#E0C2FF",
+      light: "#F5EBFF",
+      contrastText: "#47008F",
     },
   },
 });
 
 export default function Home() {
-  const [nutsId, setNutsId] = useState('');
+  const [nutsId, setNutsId] = useState("");
   const [plotData, setPlotData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [downloading, setDownloading] = useState(false);
   const [countries, setCountries] = useState([]);
 
@@ -54,11 +54,13 @@ export default function Home() {
   const fetchForecast = async () => {
     try {
       setLoading(true);
-      setError('');
-      const response = await axios.get(`http://localhost:8000/forecast/${nutsId}`);
+      setError("");
+      const response = await axios.get(
+        `http://localhost:8000/forecast/${nutsId}`,
+      );
       setPlotData(response.data);
     } catch (err) {
-      setError('Error fetching forecast data');
+      setError("Error fetching forecast data");
     } finally {
       setLoading(false);
     }
@@ -69,35 +71,37 @@ export default function Home() {
       setDownloading(true);
       const response_dl = await axios.post(`http://localhost:8000/download/`);
     } catch (err) {
-      setError('Error downloading data');
+      setError("Error downloading data");
     } finally {
       setDownloading(false);
     }
-  }
+  };
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Container maxWidth="lg">
         <Box sx={{ py: 1, justifyContent: "center" }}>
-          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
+          <Box sx={{ display: "flex", justifyContent: "center", mb: 1 }}>
             <h1>🌏 LHASA forecast</h1>
           </Box>
           <Paper elevation={1} sx={{ p: 1, mb: 1 }}>
-            <Box sx={{ 
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: 2,
-              }}>
-            
-              <Button
-                variant="contained"
-                onClick={downloadData}
-              >
-                {downloading ? <CircularProgress size={20} color="inherit" /> : 'Download latest data'}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 2,
+              }}
+            >
+              <Button variant="contained" onClick={downloadData}>
+                {downloading ? (
+                  <CircularProgress size={20} color="inherit" />
+                ) : (
+                  "Download latest data"
+                )}
               </Button>
-              
+
               {/* taken from https://mui.com/material-ui/react-autocomplete/#country-select */}
               <Autocomplete
                 id="country-select-demo"
@@ -113,7 +117,7 @@ export default function Home() {
                     <Box
                       key={key}
                       component="li"
-                      sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
+                      sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
                       {...optionProps}
                     >
                       <img
@@ -134,7 +138,7 @@ export default function Home() {
                     slotProps={{
                       htmlInput: {
                         ...params.inputProps,
-                        autoComplete: 'new-password', // disable autocomplete and autofill
+                        autoComplete: "new-password", // disable autocomplete and autofill
                       },
                     }}
                   />
@@ -145,26 +149,42 @@ export default function Home() {
                 variant="contained"
                 onClick={fetchForecast}
                 disabled={!nutsId || loading}
-                startIcon={loading && <CircularProgress size={20} color="inherit" />}
+                startIcon={
+                  loading && <CircularProgress size={20} color="inherit" />
+                }
               >
-                {loading ? 'Loading...' : 'Fetch Forecast'}
+                {loading ? "Loading..." : "Fetch Forecast"}
               </Button>
             </Box>
           </Paper>
         </Box>
 
-        <Paper elevation={3} sx={{ p: 1, mb: 1, width: '100%', height: '620px'}}>
-          {error && <Alert severity="error" sx={{ mb: 1 }}>{error}</Alert>}
+        <Paper
+          elevation={3}
+          sx={{ p: 1, mb: 1, width: "100%", height: "620px" }}
+        >
+          {error && (
+            <Alert severity="error" sx={{ mb: 1 }}>
+              {error}
+            </Alert>
+          )}
           {loading && <LinearProgress />}
           {plotData && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', height: '100%' }}>
-              <Box sx={{ width: '100%', height: '100%' }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              <Box sx={{ width: "100%", height: "100%" }}>
                 <Plot
                   data={plotData.data}
                   layout={plotData.layout}
                   config={plotData.config}
                   useResizeHandler={true}
-                  style={{ width: '100%', height: '100%' }}
+                  style={{ width: "100%", height: "100%" }}
                 />
               </Box>
             </Box>
@@ -172,17 +192,16 @@ export default function Home() {
         </Paper>
 
         <Paper elevation={1} sx={{ p: 0, mb: 1 }}>
-
           <Box
             component="footer"
             sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
               mt: 2,
               py: 2,
               bottom: 0,
-              gap: 2
+              gap: 2,
             }}
           >
             <Chip
@@ -205,8 +224,7 @@ export default function Home() {
               target="_blank"
             />
           </Box>
-      </Paper>
-        
+        </Paper>
       </Container>
     </ThemeProvider>
   );
