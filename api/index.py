@@ -35,15 +35,19 @@ async def download_data():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.get("/countries")
 async def get_countries():
     countries = nuts[nuts["LEVL_CODE"] == 0]
     countries = countries[["NUTS_ID", "NAME_LATN"]]
-    countries = countries.rename(columns={"NUTS_ID": "code", "NAME_LATN": "label"})
+    countries = countries.rename(
+        columns={"NUTS_ID": "code", "NAME_LATN": "label"}
+    )
     return JSONResponse(countries.to_dict(orient="records"))
 
+
 @app.get("/forecast/{nuts_id}")
-async def get_forecast(nuts_id: str, day: str = "today"):
+async def get_forecast(nuts_id: str, day: str = "tomorrow"):
     try:
         # Find the latest downloaded file
         files = list(Path("data").glob(f"*_{day}.tif"))
@@ -58,8 +62,8 @@ async def get_forecast(nuts_id: str, day: str = "today"):
         # Generate plot
         fig = forecast.plot(
             nuts_id=nuts_id,
-            title=f"Landslide forecast for <i>{nuts_id}</i><br>"
-                f"{latest_file.name.split(" ")[0]}"
+            title=f"Landslide forecast for {day} - <i>{nuts_id}</i><br>"
+            f"Forecast created on: {latest_file.name.split(' ')[0]}",
         )
 
         # Convert plot to JSON
