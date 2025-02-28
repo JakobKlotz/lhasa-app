@@ -22,7 +22,10 @@ import GitHub from "@mui/icons-material/GitHub";
 import DescriptionIcon from "@mui/icons-material/Description";
 import Autocomplete from "@mui/material/Autocomplete";
 
-const Plot = dynamic(() => import("react-plotly.js"), { ssr: true });
+const Plot = dynamic(() => import("react-plotly.js"), {
+  ssr: true,
+  loading: () => <CircularProgress />,
+}) as any;
 
 const theme = createTheme({
   palette: {
