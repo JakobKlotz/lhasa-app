@@ -23,7 +23,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import Autocomplete from '@mui/material/Autocomplete';
 import countriesData from './countries.json'; // Import the countries data
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+const Plot = dynamic(() => import('react-plotly.js'), { ssr: true });
 
 const theme = createTheme({
   palette: {
@@ -83,7 +83,7 @@ export default function Home() {
           <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
             <h1>🌏 LHASA forecast</h1>
           </Box>
-          <Paper elevation={3} sx={{ p: 1, mb: 1 }}>
+          <Paper elevation={1} sx={{ p: 1, mb: 1 }}>
             <Box sx={{ 
               display: 'flex',
               justifyContent: 'center',
@@ -158,12 +158,15 @@ export default function Home() {
           {loading && <LinearProgress />}
           {plotData && (
             <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', height: '100%' }}>
-              <Plot
-                data={plotData.data}
-                layout={plotData.layout}
-                config={plotData.config}
-              >
-              </Plot>
+              <Box sx={{ width: '100%', height: '100%' }}>
+                <Plot
+                  data={plotData.data}
+                  layout={plotData.layout}
+                  config={plotData.config}
+                  useResizeHandler={true}
+                  style={{ width: '100%', height: '100%' }}
+                />
+              </Box>
             </Box>
           )}
         </Paper>
