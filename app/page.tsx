@@ -21,7 +21,6 @@ import {
 import GitHub from "@mui/icons-material/GitHub";
 import DescriptionIcon from "@mui/icons-material/Description";
 import Autocomplete from "@mui/material/Autocomplete";
-import countriesData from "./countries.json"; // Import the countries data
 
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: true });
 
@@ -48,8 +47,17 @@ export default function Home() {
   const [countries, setCountries] = useState([]);
 
   useEffect(() => {
-    setCountries(countriesData); // Set the countries state with the imported data
+    fetchCountries(); // Set the countries state with the imported data
   }, []);
+
+  const fetchCountries = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/countries/");
+      setCountries(response.data);
+    } catch (err) {
+      setError("Error fetching countries data");
+    }
+  };
 
   const fetchForecast = async () => {
     try {
