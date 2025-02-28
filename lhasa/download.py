@@ -25,6 +25,9 @@ class Downloader:
         """Download the today and tomorrow.tif files from the base URL."""
         metadata = self.read_metadata(self.base_url)
 
+        if not Path(folder).exists():
+            Path(folder).mkdir(exist_ok=True)
+
         for tif in ("today.tif", "tomorrow.tif"):
             last_modified = metadata[metadata["Name"] == tif][
                 "Last modified"
@@ -34,7 +37,7 @@ class Downloader:
 
             self.download_tif(
                 url=f"{self.base_url}{tif}",
-                path=f"{last_modified}_{tif}",
+                path=f"{folder}/{last_modified}_{tif}",
                 verbose=True,
                 overwrite=False,
             )
