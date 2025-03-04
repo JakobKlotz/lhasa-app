@@ -116,8 +116,9 @@ ENV/
 /coverage
 
 # next.js
+**/.next/
 /.next/
 /out/
 
 # folders
-data/*.tif
+dev/
