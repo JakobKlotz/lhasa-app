@@ -1,16 +1,16 @@
 services:
     api:
         build:
-            context: .
-            dockerfile: Dockerfile.api
+            context: ./backend
+            dockerfile: Dockerfile
         ports:
             - "8000:8000"
         networks:
             - mynetwork
     frontend:
         build:
-            context: .
-            dockerfile: Dockerfile.frontend
+            context: ./frontend
+            dockerfile: Dockerfile
         ports:
             - "3000:3000"
         depends_on:
