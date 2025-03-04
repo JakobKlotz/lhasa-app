@@ -17,8 +17,6 @@ services:
             - api
         networks:
             - mynetwork
-        env_file:
-            - .env.production
 
 networks:
     mynetwork:

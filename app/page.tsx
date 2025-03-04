@@ -21,6 +21,7 @@ import {
 import GitHub from "@mui/icons-material/GitHub";
 import DescriptionIcon from "@mui/icons-material/Description";
 import Autocomplete from "@mui/material/Autocomplete";
+import { BACKEND_API_BASE_URL } from "../constants";
 
 const Plot = dynamic(() => import("react-plotly.js"), {
   ssr: true,
@@ -53,7 +54,7 @@ export default function Home() {
     fetchCountries(); // Set the countries state with the imported data
   }, []);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const apiUrl = BACKEND_API_BASE_URL;
 
   const fetchCountries = async () => {
     try {

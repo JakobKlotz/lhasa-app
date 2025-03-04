@@ -1,24 +1,4 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  rewrites: async () => {
-    const isDevelopment = process.env.NEXT_ENV === 'development';
-    const apiUrl = isDevelopment ? 'http://localhost:8000' : process.env.NEXT_PUBLIC_API_URL;
-
-    return [
-      {
-        source: "/:path*",
-        destination: apiUrl + "/:path*",
-      },
-      {
-        source: "/docs",
-        destination: apiUrl + "/docs",
-      },
-      {
-        source: "/openapi.json",
-        destination: apiUrl + "/openapi.json",
-      },
-    ];
-  },
+module.exports = {
+  output: "standalone",  // see https://github.com/vercel/next.js/tree/canary/examples/with-docker#using-docker
 };
-
-module.exports = nextConfig;
