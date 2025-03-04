@@ -19,6 +19,7 @@ export default function RootLayout({
       <head>
         {/* see https://github.com/yurochka-dev/pet_project/blob/PTPJ7_docker_setup/frontend/src/app/layout.tsx */}
         <PublicEnvScript />
+        <link rel="icon" href="/favicon.png" />
       </head>
       <body className={inter.className}>{children}</body>
     </html>
