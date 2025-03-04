@@ -53,22 +53,22 @@ export default function Home() {
     fetchCountries(); // Set the countries state with the imported data
   }, []);
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
   const fetchCountries = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/countries/");
+      const response = await axios.get(`${apiUrl}/countries/`);
       setCountries(response.data);
     } catch (err) {
       setError("Error fetching countries data");
     }
   };
-
+  
   const fetchForecast = async () => {
     try {
       setLoading(true);
       setError("");
-      const response = await axios.get(
-        `http://localhost:8000/forecast/${nutsId}`,
-      );
+      const response = await axios.get(`${apiUrl}/forecast/${nutsId}`);
       setPlotData(response.data);
     } catch (err) {
       setError("Error fetching forecast data");
@@ -76,11 +76,11 @@ export default function Home() {
       setLoading(false);
     }
   };
-
+  
   const downloadData = async () => {
     try {
       setDownloading(true);
-      const response_dl = await axios.post(`http://localhost:8000/download/`);
+      const response_dl = await axios.post(`${apiUrl}/download/`);
     } catch (err) {
       setError("Error downloading data");
     } finally {
@@ -95,6 +95,9 @@ export default function Home() {
         <Box sx={{ py: 1, justifyContent: "center" }}>
           <Box sx={{ display: "flex", justifyContent: "center", mb: 1 }}>
             <h1>🌏 LHASA forecast</h1>
+            <br></br>
+            <h2>Here's the url: {apiUrl}</h2>
+            <h2> and a endpoint: {`${apiUrl}/countries/`}</h2>
           </Box>
           <Paper elevation={1} sx={{ p: 1, mb: 1 }}>
             <Box

@@ -1,0 +1,25 @@
+services:
+    api:
+        build:
+            context: .
+            dockerfile: Dockerfile.api
+        ports:
+            - "8000:8000"
+        networks:
+            - mynetwork
+    frontend:
+        build:
+            context: .
+            dockerfile: Dockerfile.frontend
+        ports:
+            - "3000:3000"
+        depends_on:
+            - api
+        networks:
+            - mynetwork
+        env_file:
+            - .env.production
+
+networks:
+    mynetwork:
+        driver: bridge
