@@ -23,6 +23,9 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import Autocomplete from "@mui/material/Autocomplete";
 import { BACKEND_API_BASE_URL } from "../constants";
 
+import { fetchCountries } from "./api/countries";
+
+
 const Plot = dynamic(() => import("react-plotly.js"), {
   ssr: true,
   loading: () => <CircularProgress />,
@@ -51,18 +54,17 @@ export default function Home() {
   const [countries, setCountries] = useState([]);
 
   useEffect(() => {
-    fetchCountries(); // Set the countries state with the imported data
+    const loadCountries = async () => {
+      try {
+        const countries = await fetchCountries();
+        setCountries(countries);
+      } catch (err) {
+        setError("Error fetching countries data");
+      }
+    };
+    loadCountries();
   }, []);
-
-  const fetchCountries = async () => {
-    try {
-      const response = await axios.get(`${BACKEND_API_BASE_URL}/countries/`);
-      setCountries(response.data);
-    } catch (err) {
-      setError("Error fetching countries data");
-    }
-  };
-  
+   
   const fetchForecast = async () => {
     try {
       setLoading(true);
