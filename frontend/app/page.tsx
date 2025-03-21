@@ -25,6 +25,7 @@ import { BACKEND_API_BASE_URL } from "../constants";
 
 import { fetchCountries } from "./api/countries";
 import { fetchForecast } from "./api/forecast";
+import { downloadData } from "./api/download";
 
 
 
@@ -80,17 +81,17 @@ export default function Home() {
     }
   };
   
-  
-  const downloadData = async () => {
+  const handleDownload = async () => {
     try {
       setDownloading(true);
-      const response_dl = await axios.post(`${BACKEND_API_BASE_URL}/download/`);
+      await downloadData();
     } catch (err) {
       setError("Error downloading data");
     } finally {
       setDownloading(false);
     }
   };
+  
 
   return (
     <ThemeProvider theme={theme}>
@@ -109,7 +110,7 @@ export default function Home() {
                 gap: 2,
               }}
             >
-              <Button variant="contained" onClick={downloadData}>
+              <Button variant="contained" onClick={handleDownload}>
                 {downloading ? (
                   <CircularProgress size={20} color="inherit" />
                 ) : (
