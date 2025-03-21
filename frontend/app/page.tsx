@@ -24,6 +24,8 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { BACKEND_API_BASE_URL } from "../constants";
 
 import { fetchCountries } from "./api/countries";
+import { fetchForecast } from "./api/forecast";
+
 
 
 const Plot = dynamic(() => import("react-plotly.js"), {
@@ -65,18 +67,19 @@ export default function Home() {
     loadCountries();
   }, []);
    
-  const fetchForecast = async () => {
+  const handleForecast = async () => {
     try {
       setLoading(true);
       setError("");
-      const response = await axios.get(`${BACKEND_API_BASE_URL}/forecast/${nutsId}`);
-      setPlotData(response.data);
+      const data = await fetchForecast(nutsId);
+      setPlotData(data);
     } catch (err) {
       setError("Error fetching forecast data");
     } finally {
       setLoading(false);
     }
   };
+  
   
   const downloadData = async () => {
     try {
@@ -159,7 +162,7 @@ export default function Home() {
 
               <Button
                 variant="contained"
-                onClick={fetchForecast}
+                onClick={handleForecast}
                 disabled={!nutsId || loading}
                 startIcon={
                   loading && <CircularProgress size={20} color="inherit" />
