@@ -16,10 +16,14 @@ import {
   LinearProgress,
   Chip,
   CssBaseline,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
 import GitHub from "@mui/icons-material/GitHub";
 import DescriptionIcon from "@mui/icons-material/Description";
 import Autocomplete from "@mui/material/Autocomplete";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import InfoIcon from "@mui/icons-material/Info";
 
 import { fetchCountries } from "./api/countries";
 import { fetchForecast } from "./api/forecast";
@@ -95,6 +99,15 @@ export default function Home() {
         <Box sx={{ py: 1, justifyContent: "center" }}>
           <Box sx={{ display: "flex", justifyContent: "center", mb: 1 }}>
             <h1>🌏 LHASA forecast</h1>
+            <Tooltip
+              title="Visualize landslide forecast data from NASA. 
+                Select a country to view the forecast. This app solely aims to 
+                provide a simple visual interface for LHASA predictions."
+            >
+              <IconButton>
+                <InfoIcon />
+              </IconButton>
+            </Tooltip>
           </Box>
           <Paper elevation={1} sx={{ p: 1, mb: 1 }}>
             <Box
@@ -145,7 +158,7 @@ export default function Home() {
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Choose a country"
+                    label="Select a country"
                     slotProps={{
                       htmlInput: {
                         ...params.inputProps,
@@ -160,11 +173,17 @@ export default function Home() {
                 variant="contained"
                 onClick={handleForecast}
                 disabled={!nutsId || loading}
-                startIcon={
-                  loading && <CircularProgress size={20} color="inherit" />
-                }
               >
-                {loading ? "Loading..." : "Fetch Forecast"}
+                {loading ? (
+                  <>
+                    <CircularProgress size={20} color="inherit" />
+                  </>
+                ) : (
+                  <>
+                    <PlayArrowIcon />
+                    Run
+                  </>
+                )}
               </Button>
             </Box>
           </Paper>
@@ -180,6 +199,19 @@ export default function Home() {
             </Alert>
           )}
           {loading && <LinearProgress />}
+          {!plotData && !loading && (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              Select a country first
+            </Box>
+          )}
           {plotData && (
             <Box
               sx={{
@@ -221,7 +253,17 @@ export default function Home() {
               variant="outlined"
               clickable
               component="a"
-              href="https://github.com/JakobKlotz"
+              href="https://github.com/JakobKlotz/lhasa-app"
+              target="_blank"
+            />
+
+            <Chip
+              icon={<InfoIcon />}
+              label="Nasa LHASA"
+              variant="outlined"
+              clickable
+              component="a"
+              href="https://github.com/nasa/lhasa"
               target="_blank"
             />
 

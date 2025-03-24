@@ -1,7 +1,10 @@
 [project]
-name = "nasa-landslide"
+name = "lhasa-app"
 version = "0.1.0"
-description = "Use Nasa LHASA service"
+description = "Process LHASA predictions"
+authors = [
+    "JakobKlotz <jakob.klotz@mci.edu>",
+]
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
