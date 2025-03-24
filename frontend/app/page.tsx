@@ -16,11 +16,14 @@ import {
   LinearProgress,
   Chip,
   CssBaseline,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
 import GitHub from "@mui/icons-material/GitHub";
 import DescriptionIcon from "@mui/icons-material/Description";
 import Autocomplete from "@mui/material/Autocomplete";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import InfoIcon from "@mui/icons-material/Info";
 
 import { fetchCountries } from "./api/countries";
 import { fetchForecast } from "./api/forecast";
@@ -96,6 +99,15 @@ export default function Home() {
         <Box sx={{ py: 1, justifyContent: "center" }}>
           <Box sx={{ display: "flex", justifyContent: "center", mb: 1 }}>
             <h1>🌏 LHASA forecast</h1>
+            <Tooltip
+              title="Visualize landslide forecast data from NASA. 
+                Select a country to view the forecast. This app solely aims to 
+                provide a simple visual interface for LHASA predictions."
+            >
+              <IconButton>
+                <InfoIcon />
+              </IconButton>
+            </Tooltip>
           </Box>
           <Paper elevation={1} sx={{ p: 1, mb: 1 }}>
             <Box
@@ -164,12 +176,12 @@ export default function Home() {
               >
                 {loading ? (
                   <>
-                  <CircularProgress size={20} color="inherit" />
+                    <CircularProgress size={20} color="inherit" />
                   </>
                 ) : (
                   <>
-                  <PlayArrowIcon />
-                  Run
+                    <PlayArrowIcon />
+                    Run
                   </>
                 )}
               </Button>
@@ -242,6 +254,16 @@ export default function Home() {
               clickable
               component="a"
               href="https://github.com/JakobKlotz/nasa-landslide"
+              target="_blank"
+            />
+
+            <Chip
+              icon={<InfoIcon />}
+              label="Nasa LHASA"
+              variant="outlined"
+              clickable
+              component="a"
+              href="https://github.com/nasa/lhasa"
               target="_blank"
             />
 
