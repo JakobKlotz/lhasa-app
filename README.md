@@ -9,19 +9,21 @@ Visualize the latest LHASA predictions.
 Tech stack:
 
 - FastAPI: To fetch the latest predictions and generate maps.
-- Next.js: To visualize the maps.
+- Next.js: To display the maps.
 
-To build and run the project, simply use:
+To build and run the project, simply use `Docker` with:
 
 ```bash
 docker compose up -d --build
 ```
 
-## Background
+The app is available at `localhost:3000`
+
+## Reference
 
 The aim of this project is to simply visualize the results from the LHASA
 (Landslide Hazard Assessment for Situational Awareness). Visit the corresponding
-repo [here](https://github.com/nasa/LHASA).
+repo [here](https://github.com/nasa/LHASA). LHASA was developed by:
 
 > [!NOTE]
 > Khan, S., D. B. Kirschbaum, T. A. Stanley, P. M. Amatya, and R. A. Emberson. 2022. "Global Landslide Forecasting System for Hazard Assessment and Situational Awareness." Frontiers in Earth Science, 10: 10.3389/feart.2022.878996
