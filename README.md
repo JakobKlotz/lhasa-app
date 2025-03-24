@@ -1,6 +1,6 @@
 # LHASA app
 
-Visualize the latest LHASA predictions.
+Visualize the latest LHASA predictions to assess *landslide risks*.
 
 ![](screenshot/screenshot.png)
 
