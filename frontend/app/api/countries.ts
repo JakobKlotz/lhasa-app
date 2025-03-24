@@ -1,7 +1,6 @@
 import axios from "axios";
 import { BACKEND_API_BASE_URL } from "../../constants";
 
-
 /**
  * Fetches the list of available countries from the backend.
  * @returns A list of country objects with label and code.

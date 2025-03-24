@@ -27,8 +27,6 @@ import { fetchCountries } from "./api/countries";
 import { fetchForecast } from "./api/forecast";
 import { downloadData } from "./api/download";
 
-
-
 const Plot = dynamic(() => import("react-plotly.js"), {
   ssr: true,
   loading: () => <CircularProgress />,
@@ -67,7 +65,7 @@ export default function Home() {
     };
     loadCountries();
   }, []);
-   
+
   const handleForecast = async () => {
     try {
       setLoading(true);
@@ -80,7 +78,7 @@ export default function Home() {
       setLoading(false);
     }
   };
-  
+
   const handleDownload = async () => {
     try {
       setDownloading(true);
@@ -91,7 +89,6 @@ export default function Home() {
       setDownloading(false);
     }
   };
-  
 
   return (
     <ThemeProvider theme={theme}>
