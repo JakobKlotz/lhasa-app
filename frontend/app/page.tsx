@@ -253,7 +253,7 @@ export default function Home() {
               variant="outlined"
               clickable
               component="a"
-              href="https://github.com/JakobKlotz/nasa-landslide"
+              href="https://github.com/JakobKlotz/lhasa-app"
               target="_blank"
             />
 
