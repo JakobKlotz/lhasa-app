@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import * as React from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import dynamic from "next/dynamic";
-import axios from "axios";
 import {
   Button,
   TextField,
@@ -21,7 +20,6 @@ import {
 import GitHub from "@mui/icons-material/GitHub";
 import DescriptionIcon from "@mui/icons-material/Description";
 import Autocomplete from "@mui/material/Autocomplete";
-import { BACKEND_API_BASE_URL } from "../constants";
 
 import { fetchCountries } from "./api/countries";
 import { fetchForecast } from "./api/forecast";
