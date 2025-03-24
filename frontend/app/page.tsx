@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import * as React from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import dynamic from "next/dynamic";
-import axios from "axios";
 import {
   Button,
   TextField,
@@ -21,7 +20,10 @@ import {
 import GitHub from "@mui/icons-material/GitHub";
 import DescriptionIcon from "@mui/icons-material/Description";
 import Autocomplete from "@mui/material/Autocomplete";
-import { BACKEND_API_BASE_URL } from "../constants";
+
+import { fetchCountries } from "./api/countries";
+import { fetchForecast } from "./api/forecast";
+import { downloadData } from "./api/download";
 
 const Plot = dynamic(() => import("react-plotly.js"), {
   ssr: true,
@@ -51,35 +53,34 @@ export default function Home() {
   const [countries, setCountries] = useState([]);
 
   useEffect(() => {
-    fetchCountries(); // Set the countries state with the imported data
+    const loadCountries = async () => {
+      try {
+        const countries = await fetchCountries();
+        setCountries(countries);
+      } catch (err) {
+        setError("Error fetching countries data");
+      }
+    };
+    loadCountries();
   }, []);
 
-  const fetchCountries = async () => {
-    try {
-      const response = await axios.get(`${BACKEND_API_BASE_URL}/countries/`);
-      setCountries(response.data);
-    } catch (err) {
-      setError("Error fetching countries data");
-    }
-  };
-  
-  const fetchForecast = async () => {
+  const handleForecast = async () => {
     try {
       setLoading(true);
       setError("");
-      const response = await axios.get(`${BACKEND_API_BASE_URL}/forecast/${nutsId}`);
-      setPlotData(response.data);
+      const data = await fetchForecast(nutsId);
+      setPlotData(data);
     } catch (err) {
       setError("Error fetching forecast data");
     } finally {
       setLoading(false);
     }
   };
-  
-  const downloadData = async () => {
+
+  const handleDownload = async () => {
     try {
       setDownloading(true);
-      const response_dl = await axios.post(`${BACKEND_API_BASE_URL}/download/`);
+      await downloadData();
     } catch (err) {
       setError("Error downloading data");
     } finally {
@@ -104,7 +105,7 @@ export default function Home() {
                 gap: 2,
               }}
             >
-              <Button variant="contained" onClick={downloadData}>
+              <Button variant="contained" onClick={handleDownload}>
                 {downloading ? (
                   <CircularProgress size={20} color="inherit" />
                 ) : (
@@ -157,7 +158,7 @@ export default function Home() {
 
               <Button
                 variant="contained"
-                onClick={fetchForecast}
+                onClick={handleForecast}
                 disabled={!nutsId || loading}
                 startIcon={
                   loading && <CircularProgress size={20} color="inherit" />

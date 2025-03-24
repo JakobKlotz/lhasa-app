@@ -1,6 +1,6 @@
 // import "./globals.css";
 import { Inter } from "next/font/google";
-import { PublicEnvScript } from 'next-runtime-env';
+import { PublicEnvScript } from "next-runtime-env";
 
 const inter = Inter({ subsets: ["latin"] });
 
