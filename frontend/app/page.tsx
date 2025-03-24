@@ -20,6 +20,7 @@ import {
 import GitHub from "@mui/icons-material/GitHub";
 import DescriptionIcon from "@mui/icons-material/Description";
 import Autocomplete from "@mui/material/Autocomplete";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
 import { fetchCountries } from "./api/countries";
 import { fetchForecast } from "./api/forecast";
@@ -145,7 +146,7 @@ export default function Home() {
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Choose a country"
+                    label="Select a country"
                     slotProps={{
                       htmlInput: {
                         ...params.inputProps,
@@ -160,11 +161,17 @@ export default function Home() {
                 variant="contained"
                 onClick={handleForecast}
                 disabled={!nutsId || loading}
-                startIcon={
-                  loading && <CircularProgress size={20} color="inherit" />
-                }
               >
-                {loading ? "Loading..." : "Fetch Forecast"}
+                {loading ? (
+                  <>
+                  <CircularProgress size={20} color="inherit" />
+                  </>
+                ) : (
+                  <>
+                  <PlayArrowIcon />
+                  Run
+                  </>
+                )}
               </Button>
             </Box>
           </Paper>
@@ -180,6 +187,19 @@ export default function Home() {
             </Alert>
           )}
           {loading && <LinearProgress />}
+          {!plotData && !loading && (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              Select a country first
+            </Box>
+          )}
           {plotData && (
             <Box
               sx={{
@@ -221,7 +241,7 @@ export default function Home() {
               variant="outlined"
               clickable
               component="a"
-              href="https://github.com/JakobKlotz"
+              href="https://github.com/JakobKlotz/nasa-landslide"
               target="_blank"
             />
 
