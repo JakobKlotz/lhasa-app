@@ -1,18 +1,22 @@
-FROM python:3.12-slim
+FROM python:3.12-slim-bookworm
+# pin uv version 0.6.10
+COPY --from=ghcr.io/astral-sh/uv:0.6.10 /uv /uvx /bin/
 
 WORKDIR /app
 
 # rasterio needs libexpat1
 RUN apt-get update && apt-get install -y libexpat1
 
-COPY ./requirements.txt /app/requirements.txt
+# set-up the environment
+COPY pyproject.toml uv.lock /app/ 
+# sync without updating the uv.lock file
+RUN uv sync --frozen
 
-RUN pip install --no-cache-dir -r requirements.txt
-
+# copy necessary files
 COPY api /app/api/
 COPY lhasa /app/lhasa/
 COPY data /app/data/
 
 EXPOSE 8000
 
-ENTRYPOINT ["uvicorn", "api.index:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv", "run", "uvicorn", "api.index:app", "--host", "0.0.0.0", "--port", "8000"]
