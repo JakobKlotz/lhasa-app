@@ -29,10 +29,13 @@ app = FastAPI(title="LHASA API", lifespan=lifespan)
 @app.post("/download")
 async def download_data():
     try:
+        print("==> Download triggered")
         downloader = Downloader()
         downloader.run()
+        print("==> Download successful")
         return {"message": "Files downloaded successfully"}
     except Exception as e:
+        print("==> Download failed:", e)
         raise HTTPException(status_code=500, detail=str(e))
 
 
