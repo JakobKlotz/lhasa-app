@@ -22,27 +22,32 @@ class Downloader:
         self.base_url = base_url
 
     def run(self, folder: str | Path = "data") -> None:
-        """Download the today and tomorrow.tif files from the base URL."""
+        """Download only tomorrow.tif by default."""
+        self.download_tomorrow(folder)
+
+    def download_tomorrow(self, folder: str | Path = "data") -> None:
+        """Download only tomorrow.tif"""
+        self._download_specific("tomorrow.tif", folder)
+
+    def download_today(self, folder: str | Path = "data") -> None:
+        """Download only today.tif"""
+        self._download_specific("today.tif", folder)
+
+    def _download_specific(self, tif_name: str, folder: str | Path) -> None:
         metadata = self.read_metadata(self.base_url)
 
         if not Path(folder).exists():
             Path(folder).mkdir(exist_ok=True)
 
-        for tif in ("today.tif", "tomorrow.tif"):
-            last_modified = metadata[metadata["Name"] == tif][
-                "Last modified"
-            ].iloc[0]
-            # replace colons in time with dashes
-            last_modified = last_modified.replace(":", "-")
+        last_modified = metadata[metadata["Name"] == tif_name]["Last modified"].iloc[0]
+        last_modified = last_modified.replace(":", "-")
 
-            self.download_tif(
-                url=f"{self.base_url}{tif}",
-                path=f"{folder}/{last_modified}_{tif}",
-                verbose=True,
-                overwrite=False,
-            )
-
-        print("Done!")
+        self.download_tif(
+            url=f"{self.base_url}{tif_name}",
+            path=f"{folder}/{last_modified}_{tif_name}",
+            verbose=True,
+            overwrite=False,
+        )
 
     @staticmethod
     def download_tif(
