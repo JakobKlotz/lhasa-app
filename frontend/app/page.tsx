@@ -1,4 +1,3 @@
-// app/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -85,18 +84,6 @@ export default function Home() {
   return (
     <Container maxWidth="lg">
       <Box sx={{ py: 1, justifyContent: "center" }}>
-        <Box sx={{ display: "flex", justifyContent: "center", mb: 1 }}>
-          <h1>🌏 LHASA forecast</h1>
-          <Tooltip
-            title="Visualize landslide forecast data from NASA. 
-              Select a country to view the forecast. This app solely aims to 
-              provide a simple visual interface for LHASA predictions."
-          >
-            <IconButton>
-              <InfoIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
         <Paper elevation={1} sx={{ p: 1, mb: 1 }}>
           <Box
             sx={{

@@ -1,8 +1,8 @@
 "use client";
+import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Box from "@mui/material/Box";
 import { AppThemeProvider } from "./contexts/ThemeContext";
-import ThemeSwitcher from "./components/ThemeSwitcher";
 
 export default function RootLayout({
   children,
@@ -27,9 +27,7 @@ export default function RootLayout({
               minHeight: "100vh",
             }}
           >
-            <Box sx={{ display: "flex", justifyContent: "flex-end", p: 1 }}>
-              <ThemeSwitcher />
-            </Box>
+            <Header />
             <Box component="main" sx={{ flexGrow: 1 }}>
               {children}
             </Box>
