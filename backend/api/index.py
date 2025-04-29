@@ -11,23 +11,47 @@ from fastapi.responses import JSONResponse
 from lhasa import Downloader, ForeCast, read_nuts
 
 nuts: gpd.GeoDataFrame | None = None
+countries: gpd.GeoDataFrame | None = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global nuts
+    """Lifespan event to load initial data."""
+    global countries, nuts
     try:
+        # prepare countries data
         nuts = read_nuts("data/NUTS_RG_20M_2024_4326.geojson")
+        countries = nuts[nuts["LEVL_CODE"] == 0]
+        countries = countries[["NUTS_ID", "NAME_LATN"]]
+        countries = countries.rename(
+            columns={"NUTS_ID": "code", "NAME_LATN": "label"}
+        )
+
+        # get latest available LHASA forecast
+        downloader = Downloader()
+        latest_date = downloader.get_latest_date()
+
+        trigger_download = True
+        for existing_file in Path("data").glob("*.tif"):
+            if latest_date in existing_file.name:
+                print(f"Latest file already exists: {existing_file.name}")
+                trigger_download = False
+                break
+
+        if trigger_download:
+            downloader.run()
         yield
     except Exception as e:
-        raise RuntimeError("Failed to load NUTS data") from e
+        raise RuntimeError("Failed to load initial data") from e
 
 
 app = FastAPI(title="LHASA API", lifespan=lifespan)
 
+
 @app.get("/")
 async def root():
     return {"message": "Welcome to the LHASA API"}
+
 
 @app.post("/download")
 async def download_data():
@@ -41,11 +65,6 @@ async def download_data():
 
 @app.get("/countries")
 async def get_countries():
-    countries = nuts[nuts["LEVL_CODE"] == 0]
-    countries = countries[["NUTS_ID", "NAME_LATN"]]
-    countries = countries.rename(
-        columns={"NUTS_ID": "code", "NAME_LATN": "label"}
-    )
     return JSONResponse(countries.to_dict(orient="records"))
 
 
