@@ -80,11 +80,8 @@ async def get_forecast(nuts_id: str, day: str = "tomorrow"):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://frontend:3000",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:3001",
+        "http://localhost:3000",  # local dev and production env
+        "http://localhost:3001",  # for local dev if docker is running as well
     ],
     allow_credentials=True,
     allow_methods=["*"],
