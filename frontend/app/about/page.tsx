@@ -26,15 +26,86 @@ export default function About() {
         </cite>
       </p>
 
-      <h2>How to Use</h2>
-      <p>To use the app, select a region from the dropdown menu.</p>
-      <h2>Disclaimer</h2>
       <p>
-        The information provided by this app is for informational purposes
-        only. It is not intended to be a substitute for professional advice or
-        judgment. Always consult with a qualified professional before making
-        decisions based on the information provided.
+        LHASA: Copyright © 2020 United States Government as represented by the
+        Administrator of the National Aeronautics and Space Administration. 
+        All Rights Reserved.
       </p>
+
+      <h2>How to Use</h2>
+        <p>To use the app, select a region from the dropdown menu.</p>
+
+      <h2>Disclaimer</h2>
+        <p>
+          The information provided by this app is for informational purposes
+          only. It is not intended to be a substitute for professional advice or
+          judgment. Always consult with a qualified professional before making
+          decisions based on the information provided.
+        </p>
+
+      <h2>Tools 🚀</h2>
+        <p>
+          Following tools were used to build this app:
+          <ul>
+            <li>
+              <a
+                href="https://fastapi.tiangolo.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                FastAPI
+              </a>{" "}
+              - Serves as the backend to fetch and serve LHASA data.
+            </li>
+            <li>
+              <a
+                href="https://nextjs.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Next.js
+              </a>{" "}
+              - A React framework for building the frontend.
+            </li>
+            <li>
+              <a
+                href="https://mui.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Material-UI
+              </a>{" "}
+              - To build the user interface.
+            </li>
+            <li>
+              <a
+                href="https://www.docker.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Docker
+              </a>{" "}
+              - To containerize the application for easy deployment. 
+            </li>
+          </ul>
+        </p>
+
+      <h2>License & Contributions</h2>
+
+        <p>
+          This app is licensed under the{" "}
+          <a
+            href="https://github.com/JakobKlotz/lhasa-app/blob/main/LICENSE.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            NASA Open Source Software Agreement
+          </a>
+          . Contributions to this app are always welcome! If you have
+          suggestions, bug reports, or feature requests, please open an issue
+          GitHub.
+        </p>
+
     </div>
   );
 }
