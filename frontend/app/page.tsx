@@ -36,18 +36,27 @@ export default function Home() {
   const [error, setError] = useState("");
   const [downloading, setDownloading] = useState(false);
   const [countries, setCountries] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState(null); // State for the selected country object
 
   useEffect(() => {
     const loadCountries = async () => {
       try {
-        const countries = await fetchCountries();
-        setCountries(countries);
+        const fetchedCountries = await fetchCountries();
+        setCountries(fetchedCountries);
+        // Find and set the default country after fetching
+        const defaultCountry = fetchedCountries.find(
+          (country) => country.code === "AT",
+        );
+        if (defaultCountry) {
+          setSelectedCountry(defaultCountry);
+          setNutsId(defaultCountry.code); // Set initial nutsId as well
+        }
       } catch (err) {
         setError("Error fetching countries data");
       }
     };
     loadCountries();
-  }, []);
+  }, []); // Empty dependency array ensures this runs once on mount
 
   const handleForecast = async () => {
     try {
@@ -108,6 +117,7 @@ export default function Home() {
             {/* taken from https://mui.com/material-ui/react-autocomplete/#country-select */}
             <Autocomplete
               id="country-select-demo"
+              value={selectedCountry}
               sx={{ width: 400 }}
               options={countries}
               autoHighlight
