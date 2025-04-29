@@ -25,6 +25,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="LHASA API", lifespan=lifespan)
 
+@app.get("/")
+async def root():
+    return {"message": "Welcome to the LHASA API"}
 
 @app.post("/download")
 async def download_data():
