@@ -1,11 +1,9 @@
-'use client'; // Required for createTheme
-import { Inter } from "next/font/google";
-import { PublicEnvScript } from "next-runtime-env";
-import { ThemeProvider } from '@mui/material/styles';
+"use client"; // Required for createTheme
+import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "./theme";
-
-const inter = Inter({ subsets: ["latin"] });
+import Footer from "./components/Footer";
+import Box from "@mui/material/Box";
 
 export default function RootLayout({
   children,
@@ -17,13 +15,25 @@ export default function RootLayout({
       <head>
         <title>🛰 LHASA forecast</title>
         <meta name="description" content="Current landslide predictions" />
-          {/* <PublicEnvScript /> */}
         <link rel="icon" href="/favicon.png" />
       </head>
       {/* Wrap the body content with ThemeProvider and CssBaseline */}
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <body className={inter.className}>{children}</body>
+        <body>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              minHeight: "100vh",
+            }}
+          >
+            <Box component="main" sx={{ flexGrow: 1 }}>
+              {children}
+            </Box>
+            <Footer />
+          </Box>
+        </body>
       </ThemeProvider>
     </html>
   );

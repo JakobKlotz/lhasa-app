@@ -13,12 +13,9 @@ import {
   CircularProgress,
   Paper,
   LinearProgress,
-  Chip,
   Tooltip,
   IconButton,
 } from "@mui/material";
-import GitHub from "@mui/icons-material/GitHub";
-import DescriptionIcon from "@mui/icons-material/Description";
 import Autocomplete from "@mui/material/Autocomplete";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import InfoIcon from "@mui/icons-material/Info";
@@ -214,51 +211,6 @@ export default function Home() {
             </Box>
           </Box>
         )}
-      </Paper>
-
-      <Paper elevation={1} sx={{ p: 0, mb: 1 }}>
-        <Box
-          component="footer"
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            mt: 2,
-            py: 2,
-            bottom: 0,
-            gap: 2,
-          }}
-        >
-          <Chip
-            icon={<GitHub />}
-            label="GitHub"
-            variant="outlined"
-            clickable
-            component="a"
-            href="https://github.com/JakobKlotz/lhasa-app"
-            target="_blank"
-          />
-
-          <Chip
-            icon={<InfoIcon />}
-            label="Nasa LHASA"
-            variant="outlined"
-            clickable
-            component="a"
-            href="https://github.com/nasa/lhasa"
-            target="_blank"
-          />
-
-          <Chip
-            icon={<DescriptionIcon />}
-            label="License"
-            variant="outlined"
-            clickable
-            component="a"
-            href="https://github.com/nasa/LHASA/blob/master/LICENSE.pdf"
-            target="_blank"
-          />
-        </Box>
       </Paper>
     </Container>
   );
