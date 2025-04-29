@@ -12,12 +12,9 @@ import {
   CircularProgress,
   Paper,
   LinearProgress,
-  Tooltip,
-  IconButton,
 } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import InfoIcon from "@mui/icons-material/Info";
 
 import { fetchCountries } from "./api/countries";
 import { fetchForecast } from "./api/forecast";

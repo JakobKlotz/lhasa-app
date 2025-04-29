@@ -11,7 +11,7 @@ export default function Header() {
         padding: "10px",
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "center" }}>
+      <Box sx={{ display: "flex", alignItems: "center", mx: 15}}>
         <Typography
           variant="h6"
           component="a"
@@ -44,7 +44,7 @@ export default function Header() {
         </Typography>
       </Box>
 
-      <Box>
+      <Box sx={{ mr: 15 }}>
         <ThemeSwitcher />
       </Box>
     </header>

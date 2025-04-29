@@ -19,7 +19,7 @@ export default function Footer() {
         <Grid container spacing={4} justifyContent="center">
           <Grid item xs={12} sm={4}>
             <Typography variant="body1" fontFamily={"monospace"} gutterBottom>
-              Developed by
+              App developed by
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <a
@@ -60,7 +60,7 @@ export default function Footer() {
             }}
           >
             <Typography variant="body1" fontFamily={"monospace"} gutterBottom>
-              Useful Links
+              Useful links
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <a
