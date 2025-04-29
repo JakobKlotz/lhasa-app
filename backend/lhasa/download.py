@@ -109,3 +109,23 @@ class Downloader:
         data = data[0][["Name", "Last modified", "Size"]]
 
         return data.dropna(subset="Name")
+
+    @staticmethod
+    def get_latest_date(
+        url: str = "https://maps.nccs.nasa.gov/download/landslides/latest/",
+    ) -> str:
+        """
+        Get the latest file date available.
+
+        Args:
+            url (str): The URL to read the metadata from.
+
+        Returns:
+            str: The latest file date as a string.
+        """
+        data = Downloader.read_metadata(url)
+        # read uploaded date from tomorrow.tif file (just a choice)
+        # Note: the upload for all files occurs at the same time
+        data = data[data["Name"] == "tomorrow.tif"]
+
+        return data["Last modified"].iloc[0].replace(":", "-")
