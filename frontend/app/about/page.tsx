@@ -46,49 +46,49 @@ export default function About() {
       <h2>Tools 🚀</h2>
         <p>
           Following tools were used to build this app:
-          <ul>
-            <li>
-              <a
-                href="https://fastapi.tiangolo.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                FastAPI
-              </a>{" "}
-              - Serves as the backend to fetch and serve LHASA data.
-            </li>
-            <li>
-              <a
-                href="https://nextjs.org/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Next.js
-              </a>{" "}
-              - A React framework for building the frontend.
-            </li>
-            <li>
-              <a
-                href="https://mui.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Material-UI
-              </a>{" "}
-              - To build the user interface.
-            </li>
-            <li>
-              <a
-                href="https://www.docker.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Docker
-              </a>{" "}
-              - To containerize the application for easy deployment. 
-            </li>
-          </ul>
         </p>
+        <ul>
+          <li>
+            <a
+              href="https://fastapi.tiangolo.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              FastAPI
+            </a>{" "}
+            - Serves as the backend to fetch and serve LHASA data.
+          </li>
+          <li>
+            <a
+              href="https://nextjs.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Next.js
+            </a>{" "}
+            - A React framework for building the frontend.
+          </li>
+          <li>
+            <a
+              href="https://mui.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Material-UI
+            </a>{" "}
+            - To build the user interface.
+          </li>
+          <li>
+            <a
+              href="https://www.docker.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Docker
+            </a>{" "}
+            - To containerize the application for easy deployment. 
+          </li>
+        </ul>
 
       <h2>License & Contributions</h2>
 
