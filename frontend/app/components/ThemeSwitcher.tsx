@@ -11,7 +11,7 @@ const ThemeSwitcher: React.FC = () => {
 
   return (
     <Tooltip title={`Switch to ${mode === "light" ? "dark" : "light"} mode`}>
-      <IconButton sx={{ ml: 1 }} onClick={toggleColorMode} color="inherit">
+      <IconButton onClick={toggleColorMode} color="inherit">
         {mode === "dark" ? <WbSunnyOutlinedIcon /> : <BedtimeOutlinedIcon />}
       </IconButton>
     </Tooltip>

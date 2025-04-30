@@ -1,5 +1,6 @@
 import ThemeSwitcher from "./ThemeSwitcher";
 import { Box, Typography, Divider } from "@mui/material";
+import BackendStatusIndicator from "./BackendStatusIndicator";
 
 export default function Header() {
   return (
@@ -11,7 +12,7 @@ export default function Header() {
         padding: "10px",
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "center", mx: 15}}>
+      <Box sx={{ display: "flex", alignItems: "center", mx: 15 }}>
         <Typography
           variant="h6"
           component="a"
@@ -44,7 +45,9 @@ export default function Header() {
         </Typography>
       </Box>
 
-      <Box sx={{ mr: 15 }}>
+      <Box sx={{ mr: 15, display: "flex", alignItems: "center" }}>
+        <BackendStatusIndicator />
+        <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
         <ThemeSwitcher />
       </Box>
     </header>
