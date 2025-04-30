@@ -1,5 +1,5 @@
 import ThemeSwitcher from "./ThemeSwitcher";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Divider } from "@mui/material";
 
 export default function Header() {
   return (
@@ -27,11 +27,11 @@ export default function Header() {
         >
           🌍 LHASA Forecast
         </Typography>
+        <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
         <Typography
           component="a"
           href="/about"
           sx={{
-            ml: 2,
             textDecoration: "none",
             color: "inherit",
             fontWeight: "bold",
