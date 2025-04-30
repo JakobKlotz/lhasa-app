@@ -13,14 +13,15 @@ import {
   Paper,
   LinearProgress,
   Typography,
+  Divider,
 } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
 
 import { fetchCountries } from "./api/countries";
 import { fetchForecast } from "./api/forecast";
 import { downloadData } from "./api/download";
-import TravelExploreOutlinedIcon from '@mui/icons-material/TravelExploreOutlined';
+import TravelExploreOutlinedIcon from "@mui/icons-material/TravelExploreOutlined";
 import TextHighlighter from "./components/TextHighlighter";
 
 const Plot = dynamic(() => import("react-plotly.js"), {
@@ -82,92 +83,104 @@ export default function Home() {
   };
 
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ py: 1, justifyContent: "center" }}>
-        <Paper elevation={1} sx={{ p: 1, mb: 1 }}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: 2,
-            }}
+    <Container maxWidth="xl" sx={{ display: "flex", gap: 2, mt: 2 }}>
+      {" "}
+      {/* Add display flex and gap to Container */}
+      {/* Left Paper for Controls */}
+      <Paper elevation={1} sx={{ p: 2, width: "auto" }}>
+        {" "}
+        {/* Adjust width as needed */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column", // Stack controls vertically
+            alignItems: "stretch", // Stretch items to fill width
+            gap: 2,
+          }}
+        >
+          <Typography variant="h6">Forecasting</Typography>
+          <Divider />
+
+          <Button
+            variant="contained"
+            onClick={handleDownload}
+            disabled={true}
+            sx={{ mt: 1 }}
           >
-            <Button variant="contained" onClick={handleDownload}>
-              {downloading ? (
+            {downloading ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : (
+              "Manual Data Download"
+            )}
+          </Button>
+
+          {/* taken from https://mui.com/material-ui/react-autocomplete/#country-select */}
+          <Autocomplete
+            id="country-select-demo"
+            value={selectedCountry}
+            options={countries}
+            autoHighlight
+            getOptionLabel={(option) => option.label}
+            onChange={(e, value) => {
+              setSelectedCountry(value); // Update selected country object
+              setNutsId(value?.code);
+            }}
+            size="medium"
+            renderOption={(props, option) => {
+              const { key, ...optionProps } = props;
+              return (
+                <Box
+                  key={key}
+                  component="li"
+                  sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                  {...optionProps}
+                >
+                  <img
+                    loading="lazy"
+                    width="20"
+                    srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
+                    src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
+                    alt=""
+                  />
+                  {option.label} ({option.code})
+                </Box>
+              );
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Select a country"
+                slotProps={{
+                  htmlInput: {
+                    ...params.inputProps,
+                    autoComplete: "new-password", // disable autocomplete and autofill
+                  },
+                }}
+              />
+            )}
+          />
+
+          <Button
+            variant="contained"
+            onClick={handleForecast}
+            disabled={!nutsId || loading}
+          >
+            {loading ? (
+              <>
                 <CircularProgress size={20} color="inherit" />
-              ) : (
-                "Download latest data"
-              )}
-            </Button>
-
-            {/* taken from https://mui.com/material-ui/react-autocomplete/#country-select */}
-            <Autocomplete
-              id="country-select-demo"
-              value={selectedCountry}
-              sx={{ width: 400 }}
-              options={countries}
-              autoHighlight
-              getOptionLabel={(option) => option.label}
-              onChange={(e, value) => setNutsId(value?.code)}
-              size="medium"
-              renderOption={(props, option) => {
-                const { key, ...optionProps } = props;
-                return (
-                  <Box
-                    key={key}
-                    component="li"
-                    sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-                    {...optionProps}
-                  >
-                    <img
-                      loading="lazy"
-                      width="20"
-                      srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
-                      src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
-                      alt=""
-                    />
-                    {option.label} ({option.code})
-                  </Box>
-                );
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Select a country"
-                  slotProps={{
-                    htmlInput: {
-                      ...params.inputProps,
-                      autoComplete: "new-password", // disable autocomplete and autofill
-                    },
-                  }}
-                />
-              )}
-            />
-
-            <Button
-              variant="contained"
-              onClick={handleForecast}
-              disabled={!nutsId || loading}
-            >
-              {loading ? (
-                <>
-                  <CircularProgress size={20} color="inherit" />
-                </>
-              ) : (
-                <>
-                  <PlayArrowIcon />
-                  Run
-                </>
-              )}
-            </Button>
-          </Box>
-        </Paper>
-      </Box>
-
+              </>
+            ) : (
+              <>
+                <PlayArrowOutlinedIcon color="secondary" />
+              </>
+            )}
+          </Button>
+        </Box>
+      </Paper>
+      {/* Right Paper for Plot/Map */}
       <Paper
         elevation={3}
-        sx={{ p: 1, mb: 1, width: "100%", height: "620px" }}
+        sx={{ p: 1, flex: 1, height: "calc(100vh - 250px)" }} // Use flex: 1 to take remaining space, adjust height as needed
       >
         {error && (
           <Alert severity="error" sx={{ mb: 1 }}>
