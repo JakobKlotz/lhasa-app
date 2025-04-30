@@ -6,12 +6,14 @@ interface TextHighlighterProps {
   children: React.ReactNode;
   color?: "primary" | "secondary" | string; // Allow theme colors or custom CSS color
   heightPercentage?: number; // Control the highlight height
+  borderRadius?: number; // Control the border radius
 }
 
 export default function TextHighlighter({
   children,
   color = "secondary",
   heightPercentage = 65,
+  borderRadius = 1,
 }: TextHighlighterProps) {
   const theme = useTheme();
 
@@ -32,7 +34,7 @@ export default function TextHighlighter({
         backgroundRepeat: "no-repeat",
         fontWeight: "bold",
         px: 0.2,
-        borderRadius: "1px",
+        borderRadius: `${borderRadius}px`,
       }}
     >
       {children}

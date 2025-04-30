@@ -12,6 +12,7 @@ import {
   CircularProgress,
   Paper,
   LinearProgress,
+  Typography,
 } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -19,6 +20,8 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { fetchCountries } from "./api/countries";
 import { fetchForecast } from "./api/forecast";
 import { downloadData } from "./api/download";
+import TravelExploreOutlinedIcon from '@mui/icons-material/TravelExploreOutlined';
+import TextHighlighter from "./components/TextHighlighter";
 
 const Plot = dynamic(() => import("react-plotly.js"), {
   ssr: true,
@@ -179,10 +182,26 @@ export default function Home() {
               justifyContent: "center",
               alignItems: "center",
               width: "100%",
-              height: "100%",
+              height: "100%", // Ensure the centering box takes up the full space
             }}
           >
-            Select a country first
+            <TravelExploreOutlinedIcon
+              sx={{
+                fontSize: "3rem",
+                color: "primary.main",
+                mr: 2,
+              }}
+            />
+
+            <TextHighlighter
+              color="secondary"
+              heightPercentage={65}
+              borderRadius={5}
+            >
+              <Typography variant="h6">
+                Select a country to get started
+              </Typography>
+            </TextHighlighter>
           </Box>
         )}
         {plotData && (
