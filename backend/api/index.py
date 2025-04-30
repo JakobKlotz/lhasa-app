@@ -1,10 +1,12 @@
 import json
 from contextlib import asynccontextmanager
+from datetime import datetime
 from pathlib import Path
 
 import geopandas as gpd
+import pandas as pd
 import plotly.utils
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -15,7 +17,7 @@ countries: gpd.GeoDataFrame | None = None
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI):  # noqa: ARG001
     """Lifespan event to load initial data."""
     global countries, nuts
     try:
@@ -55,12 +57,9 @@ async def root():
 
 @app.post("/download")
 async def download_data():
-    try:
-        downloader = Downloader()
-        downloader.run()
-        return {"message": "Files downloaded successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    downloader = Downloader()
+    downloader.run()
+    return {"message": "Files downloaded successfully"}
 
 
 @app.get("/countries")
@@ -68,35 +67,59 @@ async def get_countries():
     return JSONResponse(countries.to_dict(orient="records"))
 
 
-@app.get("/forecast/{nuts_id}")
-async def get_forecast(nuts_id: str, day: str = "tomorrow"):
-    try:
-        # Find the latest downloaded file
-        files = list(Path("data").glob(f"*_{day}.tif"))
-        if not files:
-            raise FileNotFoundError(f"No {day}.tif file found")
+@app.get("/files")
+async def get_files(forecast_type: str = "tomorrow"):
+    """List all files available for each day with the latest time stamp."""
+    # Get all files in the data directory
+    files = list(Path("data").glob(f"*_{forecast_type}.tif"))
+    latest_files_per_day = {
+        "file_name": [],
+        "datetime": [],
+        "day": [],
+        "time": [],
+    }
+    if files:
+        for file in files:
+            # get date and time from file name
+            date_str = file.name.split("_")[0]
+            # convert to datetime object (e.g., "2025-04-30 04-46")
+            dt = datetime.strptime(date_str, "%Y-%m-%dT%H-%M-%S")
+            # append latest download from each day to available_dates
+            latest_files_per_day["file_name"].append(file.name)
+            latest_files_per_day["datetime"].append(dt)
+            latest_files_per_day["day"].append(dt.date())
+            latest_files_per_day["time"].append(dt.time())
 
-        latest_file = max(files, key=lambda p: p.stat().st_mtime)
+    latest_files_per_day = pd.DataFrame(latest_files_per_day)
+    # Group by day and get the row with maximum time for each day
+    if not latest_files_per_day.empty:
+        latest_files_per_day = latest_files_per_day.loc[
+            latest_files_per_day.groupby("day")["time"].idxmax()
+        ]
+        latest_files_per_day = latest_files_per_day.set_index("day", drop=True)
+    return latest_files_per_day.to_dict(orient="index")
 
-        # Create forecast
-        forecast = ForeCast(tif_path=latest_file, nuts=nuts)
 
-        # Generate plot
-        fig = forecast.plot(
-            nuts_id=nuts_id,
-            title=f"Landslide forecast for {day} - <i>{nuts_id}</i><br>"
-            f"Forecast created on: {latest_file.name.split(' ')[0]}",
-        )
+@app.get("/forecast")
+async def get_forecast(nuts_id: str, tif: str):
+    """Visualize forecast for given NUTS ID and date."""
+    tif = Path("data") / tif
+    # Create forecast
+    forecast = ForeCast(tif_path=tif, nuts=nuts)
+    day, forecast_type = tif.name.split("_")
+    day = day.split("T")[0]
 
-        # Convert plot to JSON
-        return JSONResponse(
-            json.loads(plotly.utils.PlotlyJSONEncoder().encode(fig))
-        )
+    # Generate plot
+    fig = forecast.plot(
+        nuts_id=nuts_id,
+        title=f"Landslide forecast for {forecast_type} - <i>{nuts_id}</i><br>"
+        f"Forecast created on: {day}",
+    )
 
-    except FileNotFoundError as e:
-        raise HTTPException(status_code=404, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    # Convert plot to JSON
+    return JSONResponse(
+        json.loads(plotly.utils.PlotlyJSONEncoder().encode(fig))
+    )
 
 
 app.add_middleware(
