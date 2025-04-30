@@ -1,7 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { Paper, Box, Typography, Avatar, Divider } from "@mui/material";
+import {
+  Paper,
+  Box,
+  Typography,
+  Avatar,
+  Divider,
+  AvatarGroup,
+} from "@mui/material";
 import Grid from "@mui/material/Grid";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
@@ -21,31 +28,33 @@ export default function Footer() {
             <Typography variant="body1" fontFamily={"monospace"} gutterBottom>
               App developed by
             </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <a
-                href="https://github.com/JakobKlotz"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ textDecoration: "none" }}
-              >
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <AvatarGroup max={4} sx={{ marginRight: 1 }}>
                 <Avatar
                   alt="Jakob Klotz"
                   src="https://avatars.githubusercontent.com/u/177755923?v=4"
                   sx={{ cursor: "pointer" }}
+                  onClick={() =>
+                    window.open(
+                      "https://github.com/JakobKlotz/",
+                      "_blank",
+                      "noopener,noreferrer",
+                    )
+                  }
                 />
-              </a>
-              <a
-                href="https://github.com/wildle"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ textDecoration: "none" }}
-              >
                 <Avatar
                   alt="Lenard Wild"
                   src="https://avatars.githubusercontent.com/u/115046052?v=4"
                   sx={{ cursor: "pointer" }}
+                  onClick={() =>
+                    window.open(
+                      "https://github.com/wildle",
+                      "_blank",
+                      "noopener,noreferrer",
+                    )
+                  }
                 />
-              </a>
+              </AvatarGroup>
             </Box>
           </Grid>
           <Grid
