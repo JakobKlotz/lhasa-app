@@ -14,19 +14,21 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import { GitHub } from "@mui/icons-material";
 import { DescriptionOutlined } from "@mui/icons-material";
+import InsertLinkOutlinedIcon from "@mui/icons-material/InsertLinkOutlined";
 
 export default function Footer() {
   return (
     <Paper elevation={0} sx={{ p: 2, mt: "auto", mx: 15 }}>
-      <Typography variant="body1" sx={{ mb: 1, fontFamily: "monospace" }}>
-        Get connected with us:
-      </Typography>
       <Divider />
       <Box component="footer" sx={{ py: 2 }}>
         <Grid container spacing={4} justifyContent="center">
           <Grid item xs={12} sm={4}>
-            <Typography variant="body1" fontFamily={"monospace"} gutterBottom>
-              App developed by
+            <Typography
+              variant="body1"
+              sx={{ fontWeight: "bold" }}
+              gutterBottom
+            >
+              App Devs
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <AvatarGroup max={4} sx={{ marginRight: 1 }}>
@@ -68,9 +70,12 @@ export default function Footer() {
               textAlign: "center", // Keep text centered (for Typography)
             }}
           >
-            <Typography variant="body1" fontFamily={"monospace"} gutterBottom>
-              Useful links
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+              <InsertLinkOutlinedIcon fontSize="small" />
+              <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                Links
+              </Typography>
+            </Box>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               <a
                 href="https://github.com/JakobKlotz/lhasa-app"
@@ -84,7 +89,7 @@ export default function Footer() {
                 }}
               >
                 <GitHub fontSize="small" />
-                <span>This project</span>
+                <Typography variant="caption">This project</Typography>
               </a>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -100,7 +105,7 @@ export default function Footer() {
                 }}
               >
                 <PublicOutlinedIcon fontSize="small" />
-                <span>NASA LHASA</span>
+                <Typography variant="caption">NASA LHASA</Typography>
               </a>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -116,12 +121,16 @@ export default function Footer() {
                 }}
               >
                 <DescriptionOutlined fontSize="small" />
-                <span>License</span>
+                <Typography variant="caption">License</Typography>
               </a>
             </Box>
           </Grid>
           <Grid item xs={12} sm={4} sx={{ textAlign: "right" }}>
-            <Typography variant="body1" fontFamily={"monospace"} gutterBottom>
+            <Typography
+              variant="body1"
+              sx={{ fontWeight: "bold" }}
+              gutterBottom
+            >
               Contact
             </Typography>
             <Box
