@@ -29,15 +29,13 @@ class Downloader:
             Path(folder).mkdir(exist_ok=True)
 
         for tif in ("today.tif", "tomorrow.tif"):
-            last_modified = metadata[metadata["Name"] == tif][
-                "Last modified"
+            file_prefix = metadata[metadata["Name"] == tif][
+                "File prefix"
             ].iloc[0]
-            # replace colons in time with dashes
-            last_modified = last_modified.replace(":", "-")
 
             self.download_tif(
                 url=f"{self.base_url}{tif}",
-                path=f"{folder}/{last_modified}_{tif}",
+                path=f"{folder}/{file_prefix}_{tif}",
                 verbose=True,
                 overwrite=False,
             )
@@ -108,6 +106,18 @@ class Downloader:
         # get the first table (only one)
         data = data[0][["Name", "Last modified", "Size"]]
 
+        # prepare datetime
+        data["Last modified"] = pd.to_datetime(
+            data["Last modified"], format="%Y-%m-%d %H:%M"
+        )
+        # prepare file prefix
+        data["File prefix"] = (
+            data["Last modified"]
+            .astype(str)
+            .str.replace(" ", "T")
+            .str.replace(":", "-")
+        )
+
         return data.dropna(subset="Name")
 
     @staticmethod
@@ -128,4 +138,4 @@ class Downloader:
         # Note: the upload for all files occurs at the same time
         data = data[data["Name"] == "tomorrow.tif"]
 
-        return data["Last modified"].iloc[0].replace(":", "-")
+        return data["File prefix"].iloc[0]
