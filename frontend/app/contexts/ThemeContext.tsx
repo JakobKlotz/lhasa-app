@@ -66,7 +66,7 @@ export const AppThemeProvider: React.FC<AppThemeProviderProps> = ({
         palette: {
           mode,
           primary: { main: "#C9CBA3" }, // Same primary color for both themes
-          secondary: { main: "#FFE1A8" }, // Same secondary color for both themes
+          secondary: { main: "#E26D5C" }, // Same secondary color for both themes
           background: {
             default: mode === "light" ? "#ffffff" : "#121212",
           },
