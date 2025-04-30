@@ -1,6 +1,7 @@
 import ThemeSwitcher from "./ThemeSwitcher";
 import { Box, Typography, Divider } from "@mui/material";
 import BackendStatusIndicator from "./BackendStatusIndicator";
+import TextHighlighter from "./TextHighlighter";
 
 export default function Header() {
   return (
@@ -41,7 +42,9 @@ export default function Header() {
             },
           }}
         >
-          About
+          <TextHighlighter color="secondary" heightPercentage={40}>
+            About
+          </TextHighlighter>
         </Typography>
       </Box>
 

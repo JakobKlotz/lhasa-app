@@ -1,4 +1,7 @@
+"use client";
 import Link from "@mui/material/Link";
+import TextHighlighter from "../components/TextHighlighter";
+import Divider from "@mui/material/Divider";
 
 export default function About() {
   return (
@@ -10,13 +13,20 @@ export default function About() {
           href="https://github.com/nasa/lhasa"
           target="_blank"
           rel="noopener noreferrer"
-          color="secondary"
+          color="primary"
         >
           Landslide Hazard Assessment for Situational Awareness (LHASA)
         </Link>{" "}
-        model developed by NASA, and provides easy access to daily predictions
-        of rainfall-triggered landslide risk.
+        model developed by{" "}
+        <TextHighlighter color="secondary" heightPercentage={40}>
+          NASA
+        </TextHighlighter>
+        {",  "}
+        and provides easy access to daily predictions of rainfall-triggered
+        landslide risk.
       </p>
+
+      <Divider />
 
       <p>LHASA was developed by:</p>
 
@@ -40,7 +50,10 @@ export default function About() {
 
       <h2>Disclaimer</h2>
       <p>
-        The information provided by this app is for informational purposes
+        The information provided by this app is for{" "}
+        <TextHighlighter color="secondary" heightPercentage={40}>
+          informational purposes
+        </TextHighlighter>{" "}
         only. It is not intended to be a substitute for professional advice or
         judgment. Always consult with a qualified professional before making
         decisions based on the information provided.
@@ -54,7 +67,7 @@ export default function About() {
             href="https://fastapi.tiangolo.com/"
             target="_blank"
             rel="noopener noreferrer"
-            color="secondary"
+            color="primary"
           >
             FastAPI
           </Link>{" "}
@@ -65,7 +78,7 @@ export default function About() {
             href="https://nextjs.org/"
             target="_blank"
             rel="noopener noreferrer"
-            color="secondary"
+            color="primary"
           >
             Next.js
           </Link>{" "}
@@ -76,7 +89,7 @@ export default function About() {
             href="https://mui.com/"
             target="_blank"
             rel="noopener noreferrer"
-            color="secondary"
+            color="primary"
           >
             Material-UI
           </Link>{" "}
@@ -87,7 +100,7 @@ export default function About() {
             href="https://www.docker.com/"
             target="_blank"
             rel="noopener noreferrer"
-            color="secondary"
+            color="primary"
           >
             Docker
           </Link>{" "}
@@ -103,7 +116,7 @@ export default function About() {
           href="https://github.com/JakobKlotz/lhasa-app/blob/main/LICENSE.pdf"
           target="_blank"
           rel="noopener noreferrer"
-          color="secondary"
+          color="primary"
         >
           NASA Open Source Software Agreement
         </Link>
