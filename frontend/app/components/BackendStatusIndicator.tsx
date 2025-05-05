@@ -38,7 +38,7 @@ export default function BackendStatusIndicator() {
   return (
     <Chip
       avatar={<CircleOutlinedIcon sx={{ fontSize: 14 }} />}
-      label={`All systems | ${backendStatus}`}
+      label={`Systems | ${backendStatus}`}
       variant="outlined"
       size="small"
       color={getStatusColor()} // Use the color from the status info

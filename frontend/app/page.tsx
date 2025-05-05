@@ -17,10 +17,12 @@ import {
 } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
+import dayjs, { Dayjs } from "dayjs";
 
 import { fetchCountries } from "./api/countries";
 import { fetchForecast } from "./api/forecast";
 import { downloadData } from "./api/download";
+import { fetchAvailableFiles, AvailableFilesResponse } from "./api/files";
 import TravelExploreOutlinedIcon from "@mui/icons-material/TravelExploreOutlined";
 import TextHighlighter from "./components/TextHighlighter";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -39,36 +41,68 @@ export default function Home() {
   const [error, setError] = useState("");
   const [downloading, setDownloading] = useState(false);
   const [countries, setCountries] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState(null); // State for the selected country object
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [availableFiles, setAvailableFiles] =
+    useState<AvailableFilesResponse | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
 
   useEffect(() => {
-    const loadCountries = async () => {
+    const loadInitialData = async () => {
       try {
+        // Fetch countries
         const fetchedCountries = await fetchCountries();
         setCountries(fetchedCountries);
-        // Find and set the default country after fetching
         const defaultCountry = fetchedCountries.find(
           (country) => country.code === "AT",
         );
         if (defaultCountry) {
           setSelectedCountry(defaultCountry);
-          setNutsId(defaultCountry.code); // Set initial nutsId as well
+          setNutsId(defaultCountry.code);
         }
+
+        // Fetch available files data
+        const filesData = await fetchAvailableFiles();
+        setAvailableFiles(filesData);
       } catch (err) {
-        setError("Error fetching countries data");
+        setError("Error fetching initial data");
+        console.error(err);
       }
     };
-    loadCountries();
-  }, []); // Empty dependency array ensures this runs once on mount
+    loadInitialData();
+  }, []);
 
   const handleForecast = async () => {
+    // Ensure a date is selected and file data is available
+    if (!selectedDate || !availableFiles) {
+      setError("Please select an available date.");
+      return;
+    }
+
+    const dateString = selectedDate.format("YYYY-MM-DD");
+    const fileInfo = availableFiles[dateString];
+
+    if (!fileInfo) {
+      setError("Selected date does not have corresponding file data.");
+      console.error(
+        "No file info found for date:",
+        dateString,
+        "in",
+        availableFiles,
+      );
+      return;
+    }
+
+    const tifFilename = fileInfo.file_name; // Get the filename
+
     try {
       setLoading(true);
       setError("");
-      const data = await fetchForecast(nutsId);
+      // Pass nutsId and the tif filename
+      const data = await fetchForecast(nutsId, tifFilename);
       setPlotData(data);
     } catch (err) {
       setError("Error fetching forecast data");
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -85,18 +119,24 @@ export default function Home() {
     }
   };
 
+  const shouldDisableDate = (date: dayjs.Dayjs) => {
+    // Don't disable if file data hasn't loaded yet
+    if (!availableFiles) return false;
+    const dateString = date.format("YYYY-MM-DD");
+    // Disable if the date string is NOT a key in the availableFiles object
+    return !availableFiles.hasOwnProperty(dateString);
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container maxWidth="xl" sx={{ display: "flex", gap: 2, mt: 2 }}>
         {/* Left Paper for Controls */}
         <Paper elevation={1} sx={{ p: 2, width: "auto" }}>
-          {" "}
-          {/* Adjust width as needed */}
           <Box
             sx={{
               display: "flex",
-              flexDirection: "column", // Stack controls vertically
-              alignItems: "stretch", // Stretch items to fill width
+              flexDirection: "column",
+              alignItems: "stretch",
               gap: 2,
             }}
           >
@@ -112,7 +152,7 @@ export default function Home() {
               autoHighlight
               getOptionLabel={(option) => option.label}
               onChange={(e, value) => {
-                setSelectedCountry(value); // Update selected country object
+                setSelectedCountry(value);
                 setNutsId(value?.code);
               }}
               size="medium"
@@ -143,7 +183,7 @@ export default function Home() {
                   slotProps={{
                     htmlInput: {
                       ...params.inputProps,
-                      autoComplete: "new-password", // disable autocomplete and autofill
+                      autoComplete: "new-password",
                     },
                   }}
                 />
@@ -153,12 +193,17 @@ export default function Home() {
             <Typography variant="caption" sx={{ mt: 1, mb: -3 }}>
               Creation date of forecast
             </Typography>
-            <DateCalendar />
+
+            <DateCalendar
+              value={selectedDate}
+              onChange={(newValue) => setSelectedDate(newValue)}
+              shouldDisableDate={shouldDisableDate}
+            />
 
             <Button
               variant="contained"
               onClick={handleDownload}
-              disabled={true}
+              disabled={true} // TODO
             >
               {downloading ? (
                 <CircularProgress size={20} color="inherit" />
@@ -170,7 +215,8 @@ export default function Home() {
             <Button
               variant="contained"
               onClick={handleForecast}
-              disabled={!nutsId || loading}
+              // Disable if no country, no date selected, or already loading
+              disabled={!nutsId || !selectedDate || loading}
             >
               {loading ? (
                 <>
@@ -187,7 +233,7 @@ export default function Home() {
         {/* Right Paper for Plot/Map */}
         <Paper
           elevation={3}
-          sx={{ p: 1, flex: 1, height: "calc(100vh - 250px)" }} // Use flex: 1 to take remaining space, adjust height as needed
+          sx={{ p: 1, flex: 1, height: "calc(100vh - 250px)" }}
         >
           {error && (
             <Alert severity="error" sx={{ mb: 1 }}>
@@ -212,14 +258,13 @@ export default function Home() {
                   mr: 2,
                 }}
               />
-
               <TextHighlighter
                 color="secondary"
                 heightPercentage={65}
                 borderRadius={5}
               >
                 <Typography variant="h6">
-                  Select a country to get started
+                  Select a country and date to get started
                 </Typography>
               </TextHighlighter>
             </Box>
