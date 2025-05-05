@@ -58,10 +58,11 @@ export default function About() {
       <p>
         <TextHighlighter color="secondary" heightPercentage={40}>
           Important Note:
-        </TextHighlighter>{" "} The date you select is the day the 
-        forecast was <em>generated</em>. The actual forecast displayed applies
-        to the <em>following day</em>. For example, selecting May 
-        5<sup>th</sup> will show the predicted risk for May 6<sup>th</sup>.
+        </TextHighlighter>{" "}
+        The date you select is the day the forecast was <em>generated</em>. The
+        actual forecast displayed applies to the <em>following day</em>. For
+        example, selecting May 5<sup>th</sup> will show the predicted risk for
+        May 6<sup>th</sup>.
       </p>
       <Divider />
 
