@@ -21,7 +21,6 @@ import dayjs, { Dayjs } from "dayjs";
 
 import { fetchCountries } from "./api/countries";
 import { fetchForecast } from "./api/forecast";
-import { downloadData } from "./api/download";
 import { fetchAvailableFiles, AvailableFilesResponse } from "./api/files";
 import TravelExploreOutlinedIcon from "@mui/icons-material/TravelExploreOutlined";
 import TextHighlighter from "./components/TextHighlighter";
@@ -39,7 +38,6 @@ export default function Home() {
   const [plotData, setPlotData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [downloading, setDownloading] = useState(false);
   const [countries, setCountries] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [availableFiles, setAvailableFiles] =
@@ -105,17 +103,6 @@ export default function Home() {
       console.error(err);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDownload = async () => {
-    try {
-      setDownloading(true);
-      await downloadData();
-    } catch (err) {
-      setError("Error downloading data");
-    } finally {
-      setDownloading(false);
     }
   };
 
@@ -199,18 +186,6 @@ export default function Home() {
               onChange={(newValue) => setSelectedDate(newValue)}
               shouldDisableDate={shouldDisableDate}
             />
-
-            <Button
-              variant="contained"
-              onClick={handleDownload}
-              disabled={true} // TODO
-            >
-              {downloading ? (
-                <CircularProgress size={20} color="inherit" />
-              ) : (
-                "Manual Data Download"
-              )}
-            </Button>
 
             <Button
               variant="contained"
