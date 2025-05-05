@@ -23,6 +23,12 @@ docker compose up -d --build
 
 The app is available at `localhost:3000`
 
+## Contributions
+
+Contributions are welcome! If you have any suggestions or improvements, please
+open an issue or submit a pull request. Please refer to the 
+[CONTRIBUTING.md](CONTRIBUTING.md) file for more details. Thank you! 😊
+
 ## Reference
 
 The aim of this project is to simply visualize the results from the LHASA
