@@ -229,7 +229,7 @@ async def get_forecast(nuts_id: str, tif: str):
     # Generate plot
     fig = forecast.plot(
         nuts_id=nuts_id,
-        title=f"Landslide forecast for {forecast_type} - <i>{nuts_id}</i><br>"
+        title=f"Landslide forecast for <i>{nuts_id}</i><br>"
         f"Forecast created on: {day}",
     )
 

@@ -127,7 +127,7 @@ export default function Home() {
               gap: 2,
             }}
           >
-            <Typography variant="h6">Forecasting</Typography>
+            <Typography variant="h6">Landslide Forecasting</Typography>
             <Divider />
 
             {/* taken from https://mui.com/material-ui/react-autocomplete/#country-select */}

@@ -45,8 +45,25 @@ export default function About() {
         Rights Reserved.
       </p>
 
+      <Divider />
+
       <h2>How to Use</h2>
-      <p>To use the app, select a region from the dropdown menu.</p>
+      <p>To view the landslide risk forecast:</p>
+      <ol>
+        <li>Select a region from the dropdown menu.</li>
+        <li>Choose a date using the date picker.</li>
+      </ol>
+
+      <Divider />
+      <p>
+        <TextHighlighter color="secondary" heightPercentage={40}>
+          Important Note:
+        </TextHighlighter>{" "} The date you select is the day the 
+        forecast was <em>generated</em>. The actual forecast displayed applies
+        to the <em>following day</em>. For example, selecting May 
+        5<sup>th</sup> will show the predicted risk for May 6<sup>th</sup>.
+      </p>
+      <Divider />
 
       <h2>Disclaimer</h2>
       <p>
