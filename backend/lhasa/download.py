@@ -21,10 +21,6 @@ class Downloader:
     ):
         self.base_url = base_url
 
-    def run(self, folder: str | Path = "data") -> None:
-        """Download only tomorrow.tif by default."""
-        self.download_tomorrow(folder)
-
     def download_tomorrow(self, folder: str | Path = "data") -> None:
         """Download only tomorrow.tif"""
         self._download_specific("tomorrow.tif", folder)

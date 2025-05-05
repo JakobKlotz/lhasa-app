@@ -31,7 +31,7 @@ async def download_data():
     try:
         print("==> Download triggered")
         downloader = Downloader()
-        downloader.run()
+        downloader.download_tomorrow()
         print("==> Download successful")
         return {"message": "Files downloaded successfully"}
     except Exception as e:
