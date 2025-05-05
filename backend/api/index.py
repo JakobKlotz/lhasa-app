@@ -1,4 +1,6 @@
+import asyncio
 import json
+import logging
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
@@ -6,45 +8,163 @@ from pathlib import Path
 import geopandas as gpd
 import pandas as pd
 import plotly.utils
-from fastapi import FastAPI
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from lhasa import Downloader, ForeCast, read_nuts
 
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
+
 nuts: gpd.GeoDataFrame | None = None
 countries: gpd.GeoDataFrame | None = None
+DATA_DIR = Path("data")
+SCHEDULER_MINUTES = 60  # Scheduler interval in minutes
+
+# Initialize scheduler for automatic downloading of LHASA data
+scheduler = AsyncIOScheduler(timezone="UTC")
+
+
+def check_if_latest_data_exists(
+    downloader: Downloader,
+) -> tuple[bool, str | None]:
+    """Checks if the latest data file already exists locally."""
+    try:
+        latest_date_str = downloader.get_latest_date()
+        latest_file = f"{latest_date_str}_tomorrow.tif"
+        if Path(DATA_DIR, latest_file).exists():
+            logger.info(f"Latest data file already exists: {latest_file}")
+            return True, latest_file
+
+        logger.info(
+            f"Latest data file for date {latest_file} not found locally."
+        )
+        return False, latest_file
+
+    except Exception as e:
+        logger.error(f"Error checking for latest data: {e}", exc_info=True)
+        return (
+            True,
+            None,
+        )  # Err on the side of caution, don't trigger download if check fails
+
+
+async def check_and_download_latest_data():
+    """Scheduled task to check for and download the latest data."""
+    logger.info("Scheduler: Running check for latest data...")
+    try:
+        downloader = Downloader()
+        exists, latest_file = check_if_latest_data_exists(downloader)
+
+        if not exists and latest_file:
+            logger.info(
+                f"Scheduler: New data detected ({latest_file})."
+                f"Attempting download."
+            )
+            try:
+                # Run download in a separate thread to avoid blocking asyncio
+                # event loop if it's synchronous
+                loop = asyncio.get_running_loop()
+                await loop.run_in_executor(
+                    None, downloader.run(folder=DATA_DIR)
+                )
+                # Verify download
+                exists_after, _ = check_if_latest_data_exists(downloader)
+                if exists_after:
+                    logger.info(
+                        f"Scheduler: Download successful for {latest_file}."
+                    )
+                else:
+                    logger.error(
+                        f"Scheduler: Download command ran for {latest_file}, "
+                        f"but file still not found."
+                    )
+            except Exception as download_error:
+                logger.error(
+                    f"Scheduler: Data download failed for {latest_file}: "
+                    f"{download_error}",
+                    exc_info=True,
+                )
+        elif exists:
+            logger.info(
+                f"Scheduler: Data {latest_file} is already up-to-date."
+            )
+        else:
+            logger.warning(
+                "Scheduler: Could not determine latest version to download."
+            )
+
+    except Exception as task_error:
+        logger.error(
+            f"Scheduler: Error during check/download task: {task_error}",
+            exc_info=True,
+        )
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # noqa: ARG001
     """Lifespan event to load initial data."""
     global countries, nuts
+    logger.info("Application startup: Loading initial data...")
+    # Ensure data directory exists
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+
     try:
-        # prepare countries data
-        nuts = read_nuts("data/NUTS_RG_20M_2024_4326.geojson")
-        countries = nuts[nuts["LEVL_CODE"] == 0]
-        countries = countries[["NUTS_ID", "NAME_LATN"]]
-        countries = countries.rename(
-            columns={"NUTS_ID": "code", "NAME_LATN": "label"}
+        nuts_file = DATA_DIR / "NUTS_RG_20M_2024_4326.geojson"
+        if not nuts_file.exists():
+            logger.warning(f"NUTS file not found at {nuts_file}")
+        else:
+            # prepare countries data
+            nuts = read_nuts(nuts_file)
+            countries = nuts[nuts["LEVL_CODE"] == 0]
+            countries = countries[["NUTS_ID", "NAME_LATN"]]
+            countries = countries.rename(
+                columns={"NUTS_ID": "code", "NAME_LATN": "label"}
+            )
+
+        # Add the job to the scheduler, run immediately on startup
+        # (trigger='interval' doesn't run instantly)
+        await check_and_download_latest_data()  # Run once on startup
+        scheduler.add_job(
+            check_and_download_latest_data,
+            "interval",
+            minutes=SCHEDULER_MINUTES,  # Check every minute
+            id="check_data_job",
+            replace_existing=True,
+            # Allow 5 minutes grace period if scheduler was down
+            misfire_grace_time=300,
+        )
+        # Start the scheduler
+        scheduler.start()
+        logger.info(
+            f"Background scheduler started. Will check for data every "
+            f"{SCHEDULER_MINUTES} minutes."
         )
 
-        # get latest available LHASA forecast
-        downloader = Downloader()
-        latest_date = downloader.get_latest_date()
+        yield  # Application runs here
 
-        trigger_download = True
-        for existing_file in Path("data").glob("*.tif"):
-            if latest_date in existing_file.name:
-                print(f"Latest file already exists: {existing_file.name}")
-                trigger_download = False
-                break
+        # On shutdown, stop the scheduler
+        logger.info("Application shutdown: Stopping scheduler...")
+        scheduler.shutdown()
+        logger.info("Scheduler stopped.")
 
-        if trigger_download:
-            downloader.run()
-        yield
     except Exception as e:
-        raise RuntimeError("Failed to load initial data") from e
+        logger.error(
+            f"Fatal error during application lifespan setup: {e}",
+            exc_info=True,
+        )
+        # Ensure scheduler is shutdown even if startup fails partially
+        if scheduler.running:
+            scheduler.shutdown(wait=False)
+        raise HTTPException(
+            status_code=500, detail="Application failed to initialize"
+        ) from e
 
 
 app = FastAPI(title="LHASA API", lifespan=lifespan)
@@ -53,13 +173,6 @@ app = FastAPI(title="LHASA API", lifespan=lifespan)
 @app.get("/")
 async def root():
     return {"message": "Welcome to the LHASA API"}
-
-
-@app.post("/download")
-async def download_data():
-    downloader = Downloader()
-    downloader.run()
-    return {"message": "Files downloaded successfully"}
 
 
 @app.get("/countries")
@@ -104,6 +217,10 @@ async def get_files(forecast_type: str = "tomorrow"):
 async def get_forecast(nuts_id: str, tif: str):
     """Visualize forecast for given NUTS ID and date."""
     tif = Path("data") / tif
+    if not tif.exists():
+        raise HTTPException(
+            status_code=404, detail=f"Forecast file not found: {tif}"
+        )
     # Create forecast
     forecast = ForeCast(tif_path=tif, nuts=nuts)
     day, forecast_type = tif.name.split("_")
