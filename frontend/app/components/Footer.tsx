@@ -10,11 +10,9 @@ import {
   AvatarGroup,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import { GitHub } from "@mui/icons-material";
 import { DescriptionOutlined } from "@mui/icons-material";
-import InsertLinkOutlinedIcon from "@mui/icons-material/InsertLinkOutlined";
 
 export default function Footer() {
   return (
@@ -61,17 +59,14 @@ export default function Footer() {
           </Grid>
           <Grid
             item
-            xs={12}
-            sm={4}
             sx={{
               display: "flex", // Make the grid item a flex container
               flexDirection: "column", // Stack items vertically
-              alignItems: "center", // Center items horizontally
-              textAlign: "center", // Keep text centered (for Typography)
+              alignItems: "left", // Center items horizontally
+              textAlign: "left", // Keep text centered (for Typography)
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-              <InsertLinkOutlinedIcon fontSize="small" />
               <Typography variant="body1" sx={{ fontWeight: "bold" }}>
                 Links
               </Typography>
@@ -88,7 +83,8 @@ export default function Footer() {
                   gap: "0.5rem", // Add some space between icon and text
                 }}
               >
-                <GitHub fontSize="small" />
+                <GitHub fontSize="inherit" />
+                <Divider orientation="vertical" flexItem sx={{ my: 0.4 }} />
                 <Typography variant="caption">This project</Typography>
               </a>
             </Box>
@@ -104,7 +100,8 @@ export default function Footer() {
                   gap: "0.5rem",
                 }}
               >
-                <PublicOutlinedIcon fontSize="small" />
+                <PublicOutlinedIcon fontSize="inherit" />
+                <Divider orientation="vertical" flexItem sx={{ my: 0.4 }} />
                 <Typography variant="caption">NASA LHASA</Typography>
               </a>
             </Box>
@@ -120,19 +117,13 @@ export default function Footer() {
                   gap: "0.5rem",
                 }}
               >
-                <DescriptionOutlined fontSize="small" />
+                <DescriptionOutlined fontSize="inherit" />
+                <Divider orientation="vertical" flexItem sx={{ my: 0.4 }} />
                 <Typography variant="caption">License</Typography>
               </a>
             </Box>
           </Grid>
           <Grid item xs={12} sm={4} sx={{ textAlign: "right" }}>
-            <Typography
-              variant="body1"
-              sx={{ fontWeight: "bold" }}
-              gutterBottom
-            >
-              Contact
-            </Typography>
             <Box
               sx={{
                 display: "flex",
@@ -141,20 +132,7 @@ export default function Footer() {
                 justifyContent: "flex-end",
               }}
             >
-              <a
-                href="mailto:jakob.klotz@mci.edu"
-                target="_blank"
-                style={{
-                  textDecoration: "none",
-                  color: "inherit",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                }}
-              >
-                <MailOutlineIcon fontSize="small" />
-                <span>jakob.klotz@mci.edu</span>
-              </a>
+              <img src="favicon.png" alt="Logo" width={24} height={24} />
             </Box>
           </Grid>
         </Grid>
