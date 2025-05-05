@@ -22,6 +22,11 @@ export default function BackendStatusIndicator() {
       }
     };
     checkBackendStatus();
+    // Set up interval to check status every 5 minutes
+    const intervalId = setInterval(checkBackendStatus, 5 * 60 * 1000);
+
+    // Clear interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   const getStatusColor = () => {
