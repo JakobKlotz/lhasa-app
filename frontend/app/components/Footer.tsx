@@ -20,7 +20,7 @@ export default function Footer() {
       <Divider />
       <Box component="footer" sx={{ py: 2 }}>
         <Grid container spacing={4} justifyContent="center">
-          <Grid item xs={12} sm={4}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <Typography
               variant="body1"
               sx={{ fontWeight: "bold" }}
@@ -58,7 +58,6 @@ export default function Footer() {
             </Box>
           </Grid>
           <Grid
-            item
             sx={{
               display: "flex", // Make the grid item a flex container
               flexDirection: "column", // Stack items vertically
@@ -123,7 +122,7 @@ export default function Footer() {
               </a>
             </Box>
           </Grid>
-          <Grid item xs={12} sm={4} sx={{ textAlign: "right" }}>
+          <Grid sx={{ textAlign: "right" }} size={{ xs: 12, sm: 4 }}>
             <Box
               sx={{
                 display: "flex",
