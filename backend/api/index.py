@@ -72,7 +72,7 @@ async def check_and_download_latest_data():
                 # event loop if it's synchronous
                 loop = asyncio.get_running_loop()
                 await loop.run_in_executor(
-                    None, downloader.run(folder=DATA_DIR)
+                    None, downloader.download_tomorrow(folder=DATA_DIR)
                 )
                 # Verify download
                 exists_after, _ = check_if_latest_data_exists(downloader)
