@@ -122,3 +122,6 @@ ENV/
 
 # folders
 dev/
+
+# Ignore GeoTIFF files
+*.tif
