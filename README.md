@@ -4,24 +4,32 @@
 
 # LHASA app
 
-Visualize the latest LHASA predictions to assess *landslide risks*.
+Assess *rainfall-triggered landslide risk* with an easy-to-use web app.
 
-![](screenshot/screenshot.png)
+![App screenshot](screenshot/screen[0-2-0].png)
 
-## Development
+## Getting Started
 
-Tech stack:
-
-- FastAPI: To fetch the latest predictions and generate maps.
-- Next.js: To display the maps.
-
-To build and run the project, simply use `Docker` with:
+To spin up your own instance of the app, you can use `Docker`:
 
 ```bash
 docker compose up -d --build
 ```
 
-The app is available at `localhost:3000`
+The app is available at `localhost:3000`. That's it! 🚀
+
+> [!TIP]
+> There is no need to manually manage data. By default, the latest predictions 
+> are fetched, so up-to-date information is automatically available!
+
+## Tools
+
+The LHASA app is split into two main components, backend and frontend.
+
+- **Backend**: A FastAPI server that fetches and manages the LHASA 
+  predictions and maps. Prediction data is automatically kept up to date!
+- **Frontend**: A Next.js app that displays the maps and provides a user
+  interface.
 
 ## Contributions
 
@@ -31,9 +39,10 @@ open an issue or submit a pull request. Please refer to the
 
 ## Reference
 
-The aim of this project is to simply visualize the results from the LHASA
-(Landslide Hazard Assessment for Situational Awareness). Visit the corresponding
-repo [here](https://github.com/nasa/LHASA). LHASA was developed by:
+The aim of this project is to provide an easy access to the results from the 
+LHASA(Landslide Hazard Assessment for Situational Awareness). Visit the 
+corresponding repo [here](https://github.com/nasa/LHASA). LHASA was developed 
+by:
 
 > [!NOTE]
 > Khan, S., D. B. Kirschbaum, T. A. Stanley, P. M. Amatya, and R. A. Emberson. 2022. "Global Landslide Forecasting System for Hazard Assessment and Situational Awareness." Frontiers in Earth Science, 10: 10.3389/feart.2022.878996
