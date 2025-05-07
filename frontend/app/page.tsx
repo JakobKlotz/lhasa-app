@@ -30,7 +30,7 @@ import { DateCalendar } from "@mui/x-date-pickers";
 
 const Plot = dynamic(() => import("react-plotly.js"), {
   ssr: true,
-  loading: () => <CircularProgress />,
+  loading: () => <LinearProgress />,
 }) as any;
 
 export default function Home() {
