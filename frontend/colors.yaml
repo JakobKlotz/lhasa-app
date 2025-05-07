@@ -1,0 +1,7 @@
+# This file contains the color palette for the frontend
+colors:
+  main: "#C9CBA3"
+  secondary: "#FFE1A8"
+  third: "#E26D5C"  # still unused
+  fourth: "#723D46"  # still unused
+  fifth: "#472D30"  # still unused
