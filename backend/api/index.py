@@ -172,11 +172,13 @@ app = FastAPI(title="LHASA API", lifespan=lifespan)
 
 @app.get("/")
 async def root():
+    """Health check endpoint."""
     return {"message": "Welcome to the LHASA API"}
 
 
 @app.get("/countries")
 async def get_countries():
+    """Get list of European countries with their NUTS ID and polygon border."""
     return JSONResponse(countries.to_dict(orient="records"))
 
 
