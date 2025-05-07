@@ -84,7 +84,7 @@ export default function Footer() {
               >
                 <GitHub fontSize="inherit" />
                 <Divider orientation="vertical" flexItem sx={{ my: 0.4 }} />
-                <Typography variant="caption">This project</Typography>
+                <Typography variant="caption">GitHub</Typography>
               </a>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>

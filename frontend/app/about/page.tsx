@@ -66,6 +66,20 @@ export default function About() {
       </p>
       <Divider />
 
+      <h3>Map</h3>
+      <p>
+        The map shows the predicted landslide risk for your chosen region and
+        date. The risk is shown as a probability.
+      </p>
+
+      <h3>Data</h3>
+      <p>
+        Forecast data is automatically kept up to date, so you can always
+        access the latest information. No need to worry about manually
+        downloading or updating files.
+      </p>
+      <Divider />
+
       <h2>Disclaimer</h2>
       <p>
         The information provided by this app is for{" "}
