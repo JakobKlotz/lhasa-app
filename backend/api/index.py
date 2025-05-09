@@ -12,6 +12,8 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from rio_tiler.io import Reader
+from starlette.responses import Response
 
 from lhasa import Downloader, ForeCast, read_nuts
 
@@ -239,6 +241,63 @@ async def get_forecast(nuts_id: str, tif: str):
     return JSONResponse(
         json.loads(plotly.utils.PlotlyJSONEncoder().encode(fig))
     )
+
+
+@app.get("/bounds")
+def get_bounds(tif: str):
+    """Get bounds of the given GeoTIFF file."""
+    tif_path = Path("data") / tif
+    if not tif_path.exists():
+        raise HTTPException(
+            status_code=404, detail=f"GeoTIFF file not found: {tif}"
+        )
+
+    with Reader(tif_path) as cog:
+        return cog.bounds
+
+
+# taken and adapted from
+# https://cogeotiff.github.io/rio-tiler/advanced/dynamic_tiler/#apppy
+@app.get(
+    r"/tiles/{z}/{x}/{y}.png",
+    responses={
+        200: {
+            "content": {"image/png": {}},
+            "description": "Return an image.",
+        }
+    },
+    response_class=Response,
+    description="Read GeoTIFF and return a tile",
+)
+def tile(z: int, x: int, y: int, tif: str):
+    """Handle tile requests."""
+    tif_path = Path("data") / tif
+    if not tif_path.exists():
+        raise HTTPException(
+            status_code=404, detail=f"GeoTIFF file not found: {tif_path}"
+        )
+
+    # custom colormap to handle float values and nodata values
+    # without the colormap, raster_tile would attempt a conversion to
+    # int which produces undesired results
+    cmap = [
+        # nodata values = -9999.0
+        ((-9999.0, 0.0), (0, 0, 0, 0)),  # Transparent black
+        ((0.0, 0.25), (201, 242, 155, 255)),  # Green
+        ((0.25, 0.5), (255, 255, 153, 255)),  # Light Yellow
+        ((0.5, 0.75), (255, 140, 0, 255)),  # Dark Orange
+        ((0.8, 1.0), (217, 30, 24, 255)),  # Red
+    ]
+
+    with Reader(tif_path) as cog:
+        img = cog.tile(
+            x,
+            y,
+            z,
+        )
+    # https://cogeotiff.github.io/rio-tiler/colormap/
+    content = img.render(img_format="PNG", colormap=cmap)
+    return Response(content, media_type="image/png")
 
 
 app.add_middleware(
