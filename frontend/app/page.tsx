@@ -10,8 +10,14 @@ import {
   Typography,
   Divider,
   Alert,
+  Slider,
+  InputLabel,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from "@mui/material";
 import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import dayjs, { Dayjs } from "dayjs";
 
 import { fetchAvailableFiles, AvailableFilesResponse } from "./api/files";
@@ -19,6 +25,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers";
 import ForecastMap from "./components/Map";
+import { BasemapSelector } from "./components/Map";
 
 export default function Home() {
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +33,17 @@ export default function Home() {
     useState<AvailableFilesResponse | null>(null);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [tifFilename, setTifFilename] = useState<string | null>(null);
+  const [opacity, setOpacity] = useState<number>(0.55);
+  const marks = [
+    {
+      value: 0,
+      label: "0%",
+    },
+    {
+      value: 100,
+      label: "100%",
+    },
+  ];
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -107,6 +125,36 @@ export default function Home() {
             >
               Display Forecast
             </Button>
+            {/* <Divider /> */}
+
+            <Accordion sx={{ boxShadow: 0 }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="map-customization-content"
+                id="map-customization-header"
+                sx={{ p: 0 }}
+              >
+                <Typography variant="subtitle2">Map Customization</Typography>
+              </AccordionSummary>
+              <AccordionDetails sx={{ px: 0 }}>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                  <InputLabel id="opacity-label">Opacity</InputLabel>
+                  <Slider
+                    size="small"
+                    defaultValue={55}
+                    aria-label="Opacity"
+                    marks={marks}
+                    sx={{ width: "90%", mx: "auto" }}
+                    valueLabelDisplay="auto"
+                    onChange={(event, newValue) => {
+                      const newOpacity = (newValue / 100) as number; // Convert to a value between 0 and 1
+                      setOpacity(newOpacity);
+                    }}
+                  />
+                  <BasemapSelector />
+                </Box>
+              </AccordionDetails>
+            </Accordion>
           </Box>
         </Paper>
 
@@ -120,7 +168,7 @@ export default function Home() {
             </Box>
           )}
           {/* Shows simply the BaseMap if tifFilename is null */}
-          <ForecastMap rasterPath={tifFilename} />
+          <ForecastMap rasterPath={tifFilename} opacity={opacity} />
         </Paper>
       </Container>
     </LocalizationProvider>

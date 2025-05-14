@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef, useEffect } from "react";
-import { LinearProgress } from "@mui/material";
+import { LinearProgress, Select, MenuItem, InputLabel } from "@mui/material";
 import dynamic from "next/dynamic";
 import { useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -32,8 +32,12 @@ const DynamicZoomControl = dynamic(
 
 export default function ForecastMap({
   rasterPath,
+  opacity,
+  basemapUrl = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
 }: {
   rasterPath: string | null;
+  opacity: number;
+  basemapUrl: string;
 }) {
   const mapRef = useRef<L.Map | null>(null); // Specify the type for mapRef
   // Initial map position (Innsbruck, Austria)
@@ -80,15 +84,12 @@ export default function ForecastMap({
       style={{ height: "100%", width: "100%" }}
       zoomControl={false} // Disable default zoom control
     >
-      <DynamicTileLayer
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
-        maxZoom={10}
-      />
+      <DynamicTileLayer url={basemapUrl} maxZoom={10} />
       {rasterPath ? (
         <>
           <DynamicTileLayer
             url={tilerUrl}
-            opacity={0.55}
+            opacity={opacity}
             tileSize={256}
             maxZoom={10}
             minZoom={4}
@@ -98,5 +99,40 @@ export default function ForecastMap({
       <FitBoundsToRaster />
       <DynamicZoomControl position="topright" />
     </DynamicMapContainer>
+  );
+}
+
+export function BasemapSelector() {
+  const baseMaps = [
+    {
+      name: "carto-dark",
+      url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+    },
+    {
+      name: "carto-light",
+      url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+    },
+    {
+      name: "satellite",
+      url: "https://{s}.satellite.maps.api.here.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8?app_id=YOUR_APP_ID&app_code=YOUR_APP_CODE",
+    },
+  ];
+  return (
+    <>
+      <InputLabel id="basemap-label">Basemap</InputLabel>
+      <Select
+        labelId="basemap-label"
+        id="basemap-selector"
+        value={0}
+        label="Basemap"
+        // onChange={handleChange}
+      >
+        {baseMaps.map((basemap, index) => (
+          <MenuItem key={basemap.name} value={index}>
+            {basemap.name}
+          </MenuItem>
+        ))}
+      </Select>
+    </>
   );
 }
