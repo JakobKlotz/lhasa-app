@@ -102,30 +102,33 @@ export default function ForecastMap({
   );
 }
 
-export function BasemapSelector() {
-  const baseMaps = [
-    {
-      name: "carto-dark",
-      url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
-    },
-    {
-      name: "carto-light",
-      url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-    },
-    {
-      name: "satellite",
-      url: "https://{s}.satellite.maps.api.here.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/256/png8?app_id=YOUR_APP_ID&app_code=YOUR_APP_CODE",
-    },
-  ];
+export function BasemapSelector({
+  baseMaps,
+  selectedIndex = 0,
+  onBasemapChange,
+}: {
+  baseMaps: Array<{ name: string; url: string }>;
+  selectedIndex: number;
+  onBasemapChange: (index: number) => void;
+}) {
+  const handleChange = (
+    event:
+      | React.ChangeEvent<HTMLInputElement>
+      | (Event & { target: { value: unknown; name: string } }),
+  ) => {
+    const newIndex = event.target.value as number;
+    onBasemapChange(newIndex);
+  };
+
   return (
     <>
       <InputLabel id="basemap-label">Basemap</InputLabel>
       <Select
         labelId="basemap-label"
         id="basemap-selector"
-        value={0}
+        value={selectedIndex}
         label="Basemap"
-        // onChange={handleChange}
+        onChange={handleChange}
       >
         {baseMaps.map((basemap, index) => (
           <MenuItem key={basemap.name} value={index}>
@@ -136,3 +139,18 @@ export function BasemapSelector() {
     </>
   );
 }
+
+export const baseMaps = [
+  {
+    name: "carto-dark",
+    url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+  },
+  {
+    name: "carto-light",
+    url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+  },
+  {
+    name: "satellite",
+    url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+  },
+];

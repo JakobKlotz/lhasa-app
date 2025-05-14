@@ -24,8 +24,19 @@ import { fetchAvailableFiles, AvailableFilesResponse } from "./api/files";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers";
-import ForecastMap from "./components/Map";
-import { BasemapSelector } from "./components/Map";
+import ForecastMap, { BasemapSelector, baseMaps } from "./components/Map";
+
+// marks for the slider
+const marks = [
+  {
+    value: 0,
+    label: "0%",
+  },
+  {
+    value: 100,
+    label: "100%",
+  },
+];
 
 export default function Home() {
   const [error, setError] = useState<string | null>(null);
@@ -34,16 +45,7 @@ export default function Home() {
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [tifFilename, setTifFilename] = useState<string | null>(null);
   const [opacity, setOpacity] = useState<number>(0.55);
-  const marks = [
-    {
-      value: 0,
-      label: "0%",
-    },
-    {
-      value: 100,
-      label: "100%",
-    },
-  ];
+  const [selectedBasemapIndex, setSelectedBasemapIndex] = useState<number>(0);
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -87,6 +89,10 @@ export default function Home() {
     return !availableFiles.hasOwnProperty(dateString);
   };
 
+  const handleBasemapChange = (index: number) => {
+    setSelectedBasemapIndex(index);
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container
@@ -125,7 +131,6 @@ export default function Home() {
             >
               Display Forecast
             </Button>
-            {/* <Divider /> */}
 
             <Accordion sx={{ boxShadow: 0 }}>
               <AccordionSummary
@@ -147,11 +152,15 @@ export default function Home() {
                     sx={{ width: "90%", mx: "auto" }}
                     valueLabelDisplay="auto"
                     onChange={(event, newValue) => {
-                      const newOpacity = (newValue / 100) as number; // Convert to a value between 0 and 1
+                      const newOpacity = (newValue / 100) as number;
                       setOpacity(newOpacity);
                     }}
                   />
-                  <BasemapSelector />
+                  <BasemapSelector
+                    baseMaps={baseMaps}
+                    selectedIndex={selectedBasemapIndex}
+                    onBasemapChange={handleBasemapChange}
+                  />
                 </Box>
               </AccordionDetails>
             </Accordion>
@@ -168,7 +177,11 @@ export default function Home() {
             </Box>
           )}
           {/* Shows simply the BaseMap if tifFilename is null */}
-          <ForecastMap rasterPath={tifFilename} opacity={opacity} />
+          <ForecastMap
+            rasterPath={tifFilename}
+            opacity={opacity}
+            basemapUrl={baseMaps[selectedBasemapIndex].url}
+          />
         </Paper>
       </Container>
     </LocalizationProvider>
