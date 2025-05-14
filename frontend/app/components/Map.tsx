@@ -7,21 +7,20 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet"; // Import L for fitBounds
 import { BACKEND_API_BASE_URL } from "../../constants";
 
-
 // Dynamically import MapContainer and TileLayer
 const DynamicMapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
   {
     ssr: false,
     loading: () => <LinearProgress />, // Show loading indicator while loading
-  }
+  },
 );
 
 const DynamicTileLayer = dynamic(
   () => import("react-leaflet").then((mod) => mod.TileLayer),
   {
-    ssr: false
-  }
+    ssr: false,
+  },
 );
 
 export default function ForecastMap({ rasterPath }: { rasterPath: string }) {
@@ -45,16 +44,15 @@ export default function ForecastMap({ rasterPath }: { rasterPath: string }) {
             console.log("Bounds data:", data);
             if (data && data.bounds) {
               const b = data.bounds;
-              // Leaflet bounds: 
+              // Leaflet bounds:
               // [[southWest_lat, southWest_lng], [northEast_lat, northEast_lng]]
               const leafletBounds: L.LatLngBoundsExpression = [
                 [b[1], b[0]],
                 [b[3], b[2]],
               ];
               map.fitBounds(leafletBounds);
-      
-              }      
-            })
+            }
+          });
       }
     }, [map, boundsUrl]); // Rerun if map or boundsUrl changes
 
@@ -71,7 +69,7 @@ export default function ForecastMap({ rasterPath }: { rasterPath: string }) {
       style={{ height: "100%", width: "100%" }}
     >
       <DynamicTileLayer
-        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" // Using CartoDB dark basemap like in html
+        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
         maxZoom={10}
       />
       <DynamicTileLayer

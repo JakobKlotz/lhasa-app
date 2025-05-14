@@ -2,68 +2,41 @@
 
 import { useState, useEffect } from "react";
 import * as React from "react";
-import dynamic from "next/dynamic";
 import {
   Button,
-  TextField,
   Box,
   Container,
-  Alert,
-  CircularProgress,
   Paper,
-  LinearProgress,
   Typography,
   Divider,
+  Alert,
 } from "@mui/material";
-import Autocomplete from "@mui/material/Autocomplete";
 import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
 import dayjs, { Dayjs } from "dayjs";
 
-import { fetchCountries } from "./api/countries";
-import { fetchForecast } from "./api/forecast";
 import { fetchAvailableFiles, AvailableFilesResponse } from "./api/files";
 import TravelExploreOutlinedIcon from "@mui/icons-material/TravelExploreOutlined";
 import TextHighlighter from "./components/TextHighlighter";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers";
-
-const Plot = dynamic(() => import("react-plotly.js"), {
-  ssr: true,
-  loading: () => <LinearProgress />,
-}) as any;
+import ForecastMap from "./components/Map";
 
 export default function Home() {
-  const [nutsId, setNutsId] = useState("");
-  const [plotData, setPlotData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [countries, setCountries] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [availableFiles, setAvailableFiles] =
     useState<AvailableFilesResponse | null>(null);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
+  const [tifFilename, setTifFilename] = useState<string | null>(null);
 
   useEffect(() => {
     const loadInitialData = async () => {
       try {
-        // Fetch countries
-        const fetchedCountries = await fetchCountries();
-        setCountries(fetchedCountries);
-        const defaultCountry = fetchedCountries.find(
-          (country) => country.code === "AT",
-        );
-        if (defaultCountry) {
-          setSelectedCountry(defaultCountry);
-          setNutsId(defaultCountry.code);
-        }
-
         // Fetch available files data
         const filesData = await fetchAvailableFiles();
         setAvailableFiles(filesData);
       } catch (err) {
         setError("Error fetching initial data");
-        console.error(err);
       }
     };
     loadInitialData();
@@ -73,6 +46,7 @@ export default function Home() {
     // Ensure a date is selected and file data is available
     if (!selectedDate || !availableFiles) {
       setError("Please select an available date.");
+      setTifFilename(null);
       return;
     }
 
@@ -81,29 +55,12 @@ export default function Home() {
 
     if (!fileInfo) {
       setError("Selected date does not have corresponding file data.");
-      console.error(
-        "No file info found for date:",
-        dateString,
-        "in",
-        availableFiles,
-      );
+      setTifFilename(null);
       return;
     }
 
-    const tifFilename = fileInfo.file_name; // Get the filename
-
-    try {
-      setLoading(true);
-      setError("");
-      // Pass nutsId and the tif filename
-      const data = await fetchForecast(nutsId, tifFilename);
-      setPlotData(data);
-    } catch (err) {
-      setError("Error fetching forecast data");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    setTifFilename(fileInfo.file_name); // Get the filename
+    setError(null); // Clear any previous error
   };
 
   const shouldDisableDate = (date: dayjs.Dayjs) => {
@@ -130,53 +87,6 @@ export default function Home() {
             <Typography variant="h6">Landslide Forecasting</Typography>
             <Divider />
 
-            {/* taken from https://mui.com/material-ui/react-autocomplete/#country-select */}
-            <Autocomplete
-              id="country-select-demo"
-              value={selectedCountry}
-              options={countries}
-              sx={{ mt: 1 }}
-              autoHighlight
-              getOptionLabel={(option) => option.label}
-              onChange={(e, value) => {
-                setSelectedCountry(value);
-                setNutsId(value?.code);
-              }}
-              size="medium"
-              renderOption={(props, option) => {
-                const { key, ...optionProps } = props;
-                return (
-                  <Box
-                    key={key}
-                    component="li"
-                    sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-                    {...optionProps}
-                  >
-                    <img
-                      loading="lazy"
-                      width="20"
-                      srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
-                      src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
-                      alt=""
-                    />
-                    {option.label} ({option.code})
-                  </Box>
-                );
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Select a country"
-                  slotProps={{
-                    htmlInput: {
-                      ...params.inputProps,
-                      autoComplete: "new-password",
-                    },
-                  }}
-                />
-              )}
-            />
-
             <Typography variant="caption" sx={{ mt: 1, mb: -3 }}>
               Creation date of forecast
             </Typography>
@@ -190,33 +100,31 @@ export default function Home() {
             <Button
               variant="contained"
               onClick={handleForecast}
-              // Disable if no country, no date selected, or already loading
-              disabled={!nutsId || !selectedDate || loading}
+              // Disable if no date selected
+              disabled={!selectedDate}
+              startIcon={<PlayArrowOutlinedIcon />}
             >
-              {loading ? (
-                <>
-                  <CircularProgress size={20} color="inherit" />
-                </>
-              ) : (
-                <>
-                  <PlayArrowOutlinedIcon color="secondary" />
-                </>
-              )}
+              Run
             </Button>
           </Box>
         </Paper>
+
         {/* Right Paper for Plot/Map */}
         <Paper
           elevation={3}
           sx={{ p: 1, flex: 1, height: "calc(100vh - 250px)" }}
         >
           {error && (
-            <Alert severity="error" sx={{ mb: 1 }}>
-              {error}
-            </Alert>
+            <Box>
+              <Alert variant="outlined" severity="error">
+                {error}
+              </Alert>
+            </Box>
           )}
-          {loading && <LinearProgress />}
-          {!plotData && !loading && (
+
+          {tifFilename ? (
+            <ForecastMap rasterPath={tifFilename} />
+          ) : (
             <Box
               sx={{
                 display: "flex",
@@ -239,29 +147,9 @@ export default function Home() {
                 borderRadius={5}
               >
                 <Typography variant="h6">
-                  Select a country and date to get started
+                  Select a date to get started
                 </Typography>
               </TextHighlighter>
-            </Box>
-          )}
-          {plotData && (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                width: "100%",
-                height: "100%",
-              }}
-            >
-              <Box sx={{ width: "100%", height: "100%" }}>
-                <Plot
-                  data={plotData.data}
-                  layout={plotData.layout}
-                  config={plotData.config}
-                  useResizeHandler={true}
-                  style={{ width: "100%", height: "100%" }}
-                />
-              </Box>
             </Box>
           )}
         </Paper>
