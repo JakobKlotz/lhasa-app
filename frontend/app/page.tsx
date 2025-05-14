@@ -12,12 +12,8 @@ import {
   Alert,
   Slider,
   InputLabel,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
 } from "@mui/material";
 import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import dayjs, { Dayjs } from "dayjs";
 
 import { fetchAvailableFiles, AvailableFilesResponse } from "./api/files";
@@ -25,6 +21,13 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers";
 import ForecastMap, { BasemapSelector, baseMaps } from "./components/Map";
+import SpeedDial from "@mui/material/SpeedDial";
+import SpeedDialIcon from "@mui/material/SpeedDialIcon";
+import SpeedDialAction from "@mui/material/SpeedDialAction";
+import TuneIcon from "@mui/icons-material/Tune";
+import LayersIcon from "@mui/icons-material/Layers";
+import OpacityIcon from "@mui/icons-material/Opacity";
+import Popover from "@mui/material/Popover";
 
 // marks for the slider
 const marks = [
@@ -46,6 +49,30 @@ export default function Home() {
   const [tifFilename, setTifFilename] = useState<string | null>(null);
   const [opacity, setOpacity] = useState<number>(0.55);
   const [selectedBasemapIndex, setSelectedBasemapIndex] = useState<number>(0);
+  const [openSpeedDial, setOpenSpeedDial] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [activeControl, setActiveControl] = useState<string | null>(null);
+
+  const handleSpeedDialClose = () => {
+    setOpenSpeedDial(false);
+  };
+
+  const handleSpeedDialOpen = () => {
+    setOpenSpeedDial(true);
+  };
+
+  const handleControlClick = (
+    event: React.MouseEvent<HTMLElement>,
+    control: string,
+  ) => {
+    setAnchorEl(event.currentTarget as HTMLElement);
+    setActiveControl(control);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+    setActiveControl(null);
+  };
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -131,44 +158,13 @@ export default function Home() {
             >
               Display Forecast
             </Button>
-
-            <Accordion sx={{ boxShadow: 0 }}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="map-customization-content"
-                id="map-customization-header"
-                sx={{ p: 0 }}
-              >
-                <Typography variant="subtitle2">Map Customization</Typography>
-              </AccordionSummary>
-              <AccordionDetails sx={{ px: 0 }}>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-                  <InputLabel id="opacity-label">Opacity</InputLabel>
-                  <Slider
-                    size="small"
-                    defaultValue={55}
-                    aria-label="Opacity"
-                    marks={marks}
-                    sx={{ width: "90%", mx: "auto" }}
-                    valueLabelDisplay="auto"
-                    onChange={(event, newValue) => {
-                      const newOpacity = (newValue / 100) as number;
-                      setOpacity(newOpacity);
-                    }}
-                  />
-                  <BasemapSelector
-                    baseMaps={baseMaps}
-                    selectedIndex={selectedBasemapIndex}
-                    onBasemapChange={handleBasemapChange}
-                  />
-                </Box>
-              </AccordionDetails>
-            </Accordion>
           </Box>
         </Paper>
-
         {/* Right Paper for Plot/Map */}
-        <Paper elevation={3} sx={{ p: 1, flex: 1, height: "100%" }}>
+        <Paper
+          elevation={3}
+          sx={{ p: 1, flex: 1, height: "100%", position: "relative" }}
+        >
           {error && (
             <Box>
               <Alert variant="outlined" severity="error">
@@ -182,6 +178,76 @@ export default function Home() {
             opacity={opacity}
             basemapUrl={baseMaps[selectedBasemapIndex].url}
           />
+
+          {/* SpeedDial Box for Map Customization */}
+          <Box
+            sx={{ position: "absolute", zIndex: 1000, left: 16, bottom: 16 }}
+          >
+            <SpeedDial
+              ariaLabel="Map customization options"
+              icon={<SpeedDialIcon icon={<TuneIcon />} />}
+              onClose={handleSpeedDialClose}
+              onOpen={handleSpeedDialOpen}
+              open={openSpeedDial}
+              direction="up"
+            >
+              <SpeedDialAction
+                key="opacity"
+                icon={<OpacityIcon />}
+                onClick={(e) => handleControlClick(e, "opacity")}
+              />
+              <SpeedDialAction
+                key="basemap"
+                icon={<LayersIcon />}
+                onClick={(e) => handleControlClick(e, "basemap")}
+              />
+            </SpeedDial>
+          </Box>
+
+          <Popover
+            open={Boolean(anchorEl)}
+            anchorEl={anchorEl}
+            onClose={handlePopoverClose}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+          >
+            {activeControl === "opacity" && (
+              <Box sx={{ p: 2, mx: 2, width: "7vw" }}>
+                <InputLabel id="opacity-label">Opacity</InputLabel>
+                <Slider
+                  size="medium"
+                  defaultValue={55}
+                  aria-label="Opacity"
+                  marks={marks}
+                  sx={{ width: "90%", mx: "auto" }}
+                  valueLabelDisplay="auto"
+                  onChange={(event, newValue) => {
+                    const newOpacity = (newValue as number) / 100;
+                    setOpacity(newOpacity);
+                  }}
+                />
+              </Box>
+            )}
+
+            {activeControl === "basemap" && (
+              <Box sx={{ flex: 1, p: 2, mx: 2 }}>
+                <BasemapSelector
+                  baseMaps={baseMaps}
+                  selectedIndex={selectedBasemapIndex}
+                  onBasemapChange={(index) => {
+                    handleBasemapChange(index);
+                    handlePopoverClose();
+                  }}
+                />
+              </Box>
+            )}
+          </Popover>
         </Paper>
       </Container>
     </LocalizationProvider>
