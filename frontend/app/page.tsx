@@ -15,8 +15,6 @@ import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
 import dayjs, { Dayjs } from "dayjs";
 
 import { fetchAvailableFiles, AvailableFilesResponse } from "./api/files";
-import TravelExploreOutlinedIcon from "@mui/icons-material/TravelExploreOutlined";
-import TextHighlighter from "./components/TextHighlighter";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers";
@@ -42,7 +40,7 @@ export default function Home() {
     loadInitialData();
   }, []);
 
-  const handleForecast = async () => {
+  const handleTif = async () => {
     // Ensure a date is selected and file data is available
     if (!selectedDate || !availableFiles) {
       setError("Please select an available date.");
@@ -73,7 +71,10 @@ export default function Home() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Container maxWidth="xl" sx={{ display: "flex", gap: 2, mt: 2 }}>
+      <Container
+        maxWidth="xl"
+        sx={{ display: "flex", gap: 2, mt: 2, height: "80vh", width: "100%" }}
+      >
         {/* Left Paper for Controls */}
         <Paper elevation={1} sx={{ p: 2, width: "auto" }}>
           <Box
@@ -99,21 +100,18 @@ export default function Home() {
 
             <Button
               variant="contained"
-              onClick={handleForecast}
+              onClick={handleTif}
               // Disable if no date selected
               disabled={!selectedDate}
               startIcon={<PlayArrowOutlinedIcon />}
             >
-              Run
+              Display Forecast
             </Button>
           </Box>
         </Paper>
 
         {/* Right Paper for Plot/Map */}
-        <Paper
-          elevation={3}
-          sx={{ p: 1, flex: 1, height: "calc(100vh - 250px)" }}
-        >
+        <Paper elevation={3} sx={{ p: 1, flex: 1, height: "100%" }}>
           {error && (
             <Box>
               <Alert variant="outlined" severity="error">
@@ -121,37 +119,8 @@ export default function Home() {
               </Alert>
             </Box>
           )}
-
-          {tifFilename ? (
-            <ForecastMap rasterPath={tifFilename} />
-          ) : (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "100%",
-                height: "100%", // Ensure the centering box takes up the full space
-              }}
-            >
-              <TravelExploreOutlinedIcon
-                sx={{
-                  fontSize: "3rem",
-                  color: "primary.main",
-                  mr: 2,
-                }}
-              />
-              <TextHighlighter
-                color="secondary"
-                heightPercentage={65}
-                borderRadius={5}
-              >
-                <Typography variant="h6">
-                  Select a date to get started
-                </Typography>
-              </TextHighlighter>
-            </Box>
-          )}
+          {/* Shows simply the BaseMap if tifFilename is null */}
+          <ForecastMap rasterPath={tifFilename} />
         </Paper>
       </Container>
     </LocalizationProvider>

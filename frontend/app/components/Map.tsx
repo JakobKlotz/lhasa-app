@@ -23,7 +23,18 @@ const DynamicTileLayer = dynamic(
   },
 );
 
-export default function ForecastMap({ rasterPath }: { rasterPath: string }) {
+const DynamicZoomControl = dynamic(
+  () => import("react-leaflet").then((mod) => mod.ZoomControl),
+  {
+    ssr: false,
+  },
+);
+
+export default function ForecastMap({
+  rasterPath,
+}: {
+  rasterPath: string | null;
+}) {
   const mapRef = useRef<L.Map | null>(null); // Specify the type for mapRef
   // Initial map position (Innsbruck, Austria)
   const latitude = 47.2692;
@@ -67,19 +78,25 @@ export default function ForecastMap({ rasterPath }: { rasterPath: string }) {
       minZoom={4}
       ref={mapRef}
       style={{ height: "100%", width: "100%" }}
+      zoomControl={false} // Disable default zoom control
     >
       <DynamicTileLayer
         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
         maxZoom={10}
       />
-      <DynamicTileLayer
-        url={tilerUrl}
-        opacity={0.55}
-        tileSize={256}
-        maxZoom={10}
-        minZoom={4}
-      />
+      {rasterPath ? (
+        <>
+          <DynamicTileLayer
+            url={tilerUrl}
+            opacity={0.55}
+            tileSize={256}
+            maxZoom={10}
+            minZoom={4}
+          />
+        </>
+      ) : null}
       <FitBoundsToRaster />
+      <DynamicZoomControl position="topright" />
     </DynamicMapContainer>
   );
 }
