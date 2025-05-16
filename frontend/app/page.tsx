@@ -28,7 +28,7 @@ import TuneIcon from "@mui/icons-material/Tune";
 import LayersIcon from "@mui/icons-material/Layers";
 import OpacityIcon from "@mui/icons-material/Opacity";
 import Popover from "@mui/material/Popover";
-
+import MapLegend from "./components/MapLegend";
 // marks for the slider
 const marks = [
   {
@@ -48,7 +48,16 @@ export default function Home() {
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [tifFilename, setTifFilename] = useState<string | null>(null);
   const [opacity, setOpacity] = useState<number>(0.55);
-  const [selectedBasemapIndex, setSelectedBasemapIndex] = useState<number>(0);
+  const [selectedBasemapIndex, setSelectedBasemapIndex] = useState(() => {
+    // Initialize based on theme or default
+    const initialMode =
+      typeof window !== "undefined"
+        ? localStorage.getItem("themeMode")
+        : "dark";
+    return initialMode === "light"
+      ? baseMaps.findIndex((bm) => bm.name === "carto-light")
+      : baseMaps.findIndex((bm) => bm.name === "carto-dark");
+  });
   const [openSpeedDial, setOpenSpeedDial] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [activeControl, setActiveControl] = useState<string | null>(null);
@@ -178,6 +187,7 @@ export default function Home() {
             opacity={opacity}
             basemapUrl={baseMaps[selectedBasemapIndex].url}
           />
+          <MapLegend />
 
           {/* SpeedDial Box for Map Customization */}
           <Box
