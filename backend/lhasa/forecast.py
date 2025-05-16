@@ -1,3 +1,4 @@
+import warnings
 from pathlib import Path
 
 import geopandas as gpd
@@ -16,7 +17,7 @@ def read_nuts(nuts_path: str | Path) -> gpd.GeoDataFrame:
 
 class ForeCast:
     def __init__(self, *, tif_path: str | Path, nuts: gpd.GeoDataFrame):
-        """Visualize LHASA predictions for a given NUTS region.
+        """DEPRECATED. Visualize LHASA predictions for a given NUTS region.
         NUTS regions can be downloaded from:
         https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/territorial-units-statistics
 
@@ -24,6 +25,12 @@ class ForeCast:
             tif_path (str | Path): Tif file with predictions.
             nuts_path (str | Path): The path to the NUTS geojson file.
         """
+        warnings.warn(
+            "The ForeCast class is deprecated and will be removed in "
+            "a future version.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.tif_path = Path(tif_path)
         self.nuts = nuts
 

@@ -178,7 +178,7 @@ async def root():
     return {"message": "Welcome to the LHASA API"}
 
 
-@app.get("/countries")
+@app.get("/countries", deprecated=True)
 async def get_countries():
     """Get list of European countries with their NUTS ID and polygon border."""
     return JSONResponse(countries.to_dict(orient="records"))
@@ -217,7 +217,7 @@ async def get_files(forecast_type: str = "tomorrow"):
     return latest_files_per_day.to_dict(orient="index")
 
 
-@app.get("/forecast")
+@app.get("/forecast", deprecated=True)
 async def get_forecast(nuts_id: str, tif: str):
     """Visualize forecast for given NUTS ID and date."""
     tif = Path("data") / tif
