@@ -29,6 +29,7 @@ import LayersIcon from "@mui/icons-material/Layers";
 import OpacityIcon from "@mui/icons-material/Opacity";
 import Popover from "@mui/material/Popover";
 import MapLegend from "./components/MapLegend";
+
 // marks for the slider
 const marks = [
   {
@@ -89,6 +90,20 @@ export default function Home() {
         // Fetch available files data
         const filesData = await fetchAvailableFiles();
         setAvailableFiles(filesData);
+
+        // Load the latest available TIF file on startup
+        if (filesData && Object.keys(filesData).length > 0) {
+          const availableDates = Object.keys(filesData).sort(
+            (a, b) => dayjs(b).valueOf() - dayjs(a).valueOf(),
+          );
+          const latestDateString = availableDates[0];
+          const latestFileInfo = filesData[latestDateString];
+
+          if (latestFileInfo) {
+            setSelectedDate(dayjs(latestDateString));
+            setTifFilename(latestFileInfo.file_name);
+          }
+        }
       } catch (err) {
         setError("Error fetching initial data");
       }
