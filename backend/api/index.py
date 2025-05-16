@@ -270,7 +270,7 @@ def get_bounds(tif: str):
     description="Read GeoTIFF and return a tile",
 )
 def tile(z: int, x: int, y: int, tif: str):
-    """Handle tile requests."""
+    """Handle tile requests for GeoTIFF files."""
     tif_path = Path("data") / tif
     if not tif_path.exists():
         raise HTTPException(
@@ -286,18 +286,28 @@ def tile(z: int, x: int, y: int, tif: str):
         ((0.0, 0.25), (201, 242, 155, 255)),  # Green
         ((0.25, 0.5), (255, 255, 153, 255)),  # Light Yellow
         ((0.5, 0.75), (255, 140, 0, 255)),  # Dark Orange
-        ((0.8, 1.0), (217, 30, 24, 255)),  # Red
+        ((0.75, 1.0), (217, 30, 24, 255)),  # Red
     ]
 
-    with Reader(tif_path) as cog:
-        img = cog.tile(
-            x,
-            y,
-            z,
-        )
+    with Reader(tif_path) as src:
+        img = src.tile(x, y, z)
     # https://cogeotiff.github.io/rio-tiler/colormap/
     content = img.render(img_format="PNG", colormap=cmap)
     return Response(content, media_type="image/png")
+
+
+@app.get("/statistics")
+def get_statistics(tif: str):
+    """Get global statistics of the given GeoTIFF file."""
+    tif_path = Path("data") / tif
+    if not tif_path.exists():
+        raise HTTPException(
+            status_code=404, detail=f"GeoTIFF file not found: {tif}"
+        )
+
+    with Reader(tif_path) as src:
+        # Specific GeoTIFF files have a single band
+        return src.statistics().get("b1")
 
 
 app.add_middleware(
