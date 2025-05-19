@@ -193,35 +193,50 @@ export default function Home() {
 
             {tifFilename && (
               <>
-                <Button
-                  variant="outlined"
-                  startIcon={<BarChartIcon />}
-                  onClick={() => setStatsDialogOpen(true)}
-                  sx={{ mt: 1 }}
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    p: 2,
+                    border: "1px solid #e0e0e0",
+                    borderRadius: 1,
+                    bgcolor: "background.paper",
+                  }}
                 >
-                  View Statistics
-                </Button>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    Forecast Analysis
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    startIcon={<BarChartIcon />}
+                    onClick={() => setStatsDialogOpen(true)}
+                    sx={{ mt: 1 }}
+                  >
+                    View Statistics
+                  </Button>
 
-                <Dialog
-                  sx={{ p: 2 }}
-                  open={statsDialogOpen}
-                  onClose={() => setStatsDialogOpen(false)}
-                >
-                  <DialogTitle>
-                    Date selected: {selectedDate?.format("DD-MM-YYYY")}
-                    <IconButton
-                      aria-label="close"
-                      onClick={() => setStatsDialogOpen(false)}
-                      sx={{ position: "absolute", right: 8, top: 8 }}
-                    >
-                      <CloseIcon />
-                    </IconButton>
-                  </DialogTitle>
-                  <DialogContent dividers>
-                    {/* Actual statistics presented as info cards */}
-                    <Statistics rasterPath={tifFilename} />
-                  </DialogContent>
-                </Dialog>
+                  <Dialog
+                    sx={{ p: 2 }}
+                    open={statsDialogOpen}
+                    onClose={() => setStatsDialogOpen(false)}
+                  >
+                    <DialogTitle>
+                      Date selected: {selectedDate?.format("DD-MM-YYYY")}
+                      <IconButton
+                        aria-label="close"
+                        onClick={() => setStatsDialogOpen(false)}
+                        sx={{ position: "absolute", right: 8, top: 8 }}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </DialogTitle>
+                    <DialogContent dividers>
+                      {/* Actual statistics presented as info cards */}
+                      <Statistics rasterPath={tifFilename} />
+                    </DialogContent>
+                  </Dialog>
+                </Box>
               </>
             )}
           </Box>
