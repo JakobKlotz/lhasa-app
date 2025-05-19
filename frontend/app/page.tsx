@@ -16,8 +16,8 @@ import {
   DialogTitle,
   DialogContent,
   IconButton,
+  Chip,
 } from "@mui/material";
-import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
 import dayjs, { Dayjs } from "dayjs";
 
 import { fetchAvailableFiles, AvailableFilesResponse } from "./api/files";
@@ -36,6 +36,7 @@ import MapLegend from "./components/MapLegend";
 import Statistics from "./components/Statistics";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import CloseIcon from "@mui/icons-material/Close";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 // marks for the slider
 const marks = [
@@ -54,6 +55,7 @@ export default function Home() {
   const [availableFiles, setAvailableFiles] =
     useState<AvailableFilesResponse | null>(null);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
+  const [activeDate, setActiveDate] = useState<Dayjs | null>(null); // Track currently displayed date
   const [tifFilename, setTifFilename] = useState<string | null>(null);
   const [opacity, setOpacity] = useState<number>(0.55);
   const [selectedBasemapIndex, setSelectedBasemapIndex] = useState(() => {
@@ -108,7 +110,9 @@ export default function Home() {
           const latestFileInfo = filesData[latestDateString];
 
           if (latestFileInfo) {
-            setSelectedDate(dayjs(latestDateString));
+            const latestDayjs = dayjs(latestDateString);
+            setSelectedDate(latestDayjs);
+            setActiveDate(latestDayjs);
             setTifFilename(latestFileInfo.file_name);
           }
         }
@@ -119,25 +123,19 @@ export default function Home() {
     loadInitialData();
   }, []);
 
-  const handleTif = async () => {
-    // Ensure a date is selected and file data is available
-    if (!selectedDate || !availableFiles) {
-      setError("Please select an available date.");
-      setTifFilename(null);
-      return;
+  // Handle date selection and auto-update map
+  const handleDateChange = (newDate: Dayjs | null) => {
+    setSelectedDate(newDate);
+    if (newDate && availableFiles) {
+      const dateString = newDate.format("YYYY-MM-DD");
+      const fileInfo = availableFiles[dateString];
+
+      if (fileInfo) {
+        setTifFilename(fileInfo.file_name);
+        setActiveDate(newDate);
+        setError(null);
+      }
     }
-
-    const dateString = selectedDate.format("YYYY-MM-DD");
-    const fileInfo = availableFiles[dateString];
-
-    if (!fileInfo) {
-      setError("Selected date does not have corresponding file data.");
-      setTifFilename(null);
-      return;
-    }
-
-    setTifFilename(fileInfo.file_name); // Get the filename
-    setError(null); // Clear any previous error
   };
 
   const shouldDisableDate = (date: dayjs.Dayjs) => {
@@ -175,19 +173,9 @@ export default function Home() {
             <DateCalendar
               sx={{ mb: -3 }}
               value={selectedDate}
-              onChange={(newValue) => setSelectedDate(newValue)}
+              onChange={handleDateChange}
               shouldDisableDate={shouldDisableDate}
             />
-
-            <Button
-              variant="contained"
-              onClick={handleTif}
-              // Disable if no date selected
-              disabled={!selectedDate}
-              startIcon={<PlayArrowOutlinedIcon />}
-            >
-              Display Forecast
-            </Button>
 
             <Divider />
 
@@ -221,8 +209,11 @@ export default function Home() {
                     open={statsDialogOpen}
                     onClose={() => setStatsDialogOpen(false)}
                   >
-                    <DialogTitle>
-                      Date selected: {selectedDate?.format("DD-MM-YYYY")}
+                    <DialogTitle
+                      sx={{ display: "flex", alignItems: "center" }}
+                    >
+                      <BarChartIcon sx={{ mr: 1 }} />
+                      Selected: {activeDate?.format("DD-MM-YYYY")}
                       <IconButton
                         aria-label="close"
                         onClick={() => setStatsDialogOpen(false)}
@@ -260,6 +251,23 @@ export default function Home() {
             basemapUrl={baseMaps[selectedBasemapIndex].url}
           />
           <MapLegend />
+
+          {/* Display selected date as chip */}
+          {activeDate && (
+            <Chip
+              sx={{
+                position: "absolute",
+                top: 15,
+                left: "50%",
+                transform: "translateX(-50%)",
+                zIndex: 1000,
+                mb: 1,
+              }}
+              icon={<CalendarTodayIcon />}
+              color="secondary"
+              label={`Selected: ${activeDate.format("DD-MM-YYYY")}`}
+            />
+          )}
 
           {/* SpeedDial Box for Map Customization */}
           <Box

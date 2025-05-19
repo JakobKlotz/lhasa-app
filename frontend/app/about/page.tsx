@@ -49,11 +49,11 @@ export default function About() {
 
       <h2>How to Use</h2>
       <p>By default, the latest available forecast is visualized.</p>
-      
+
       <Divider />
       <p>
         The calendar allows you to select a specific date for which you want to
-        view the forecast. If no data is available, the specific date is 
+        view the forecast. If no data is available, the specific date is
         disabled in the calendar.
       </p>
 
@@ -70,8 +70,8 @@ export default function About() {
 
       <h3>Map</h3>
       <p>
-        The map shows the predicted landslide risk as probability. Choose a 
-        different basemap or change the opacity of the overly with the {" "}
+        The map shows the predicted landslide risk as probability. Choose a
+        different basemap or change the opacity of the overly with the{" "}
         <b>customization options</b> in the bottom left corner of the map.
       </p>
 
@@ -108,19 +108,19 @@ export default function About() {
           </Link>{" "}
           - Serves as the backend to fetch and serve LHASA data.
         </li>
-          <ul>
-            <li>
-              <Link
-                href="https://cogeotiff.github.io/rio-tiler/"
-                target="_blank"
-                rel="noopener noreferrer"
-                color="secondary"
-              >
-                rio-tiler
-              </Link>{" "}
-              - To dynamically tile and serve LHASA data.
-            </li>
-          </ul>
+        <ul>
+          <li>
+            <Link
+              href="https://cogeotiff.github.io/rio-tiler/"
+              target="_blank"
+              rel="noopener noreferrer"
+              color="secondary"
+            >
+              rio-tiler
+            </Link>{" "}
+            - To dynamically tile and serve LHASA data.
+          </li>
+        </ul>
         <li>
           <Link
             href="https://nextjs.org/"
