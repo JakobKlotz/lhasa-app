@@ -208,8 +208,6 @@ export default function Home() {
                   onClose={() => setStatsDialogOpen(false)}
                 >
                   <DialogTitle>
-                    Global Forecast Statistics:
-                    <br />
                     Date selected: {selectedDate?.format("DD-MM-YYYY")}
                     <IconButton
                       aria-label="close"

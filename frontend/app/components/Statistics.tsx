@@ -7,12 +7,12 @@ import {
   Typography,
   LinearProgress,
   Grid,
-  Stack,
+  Divider,
+  Box,
+  Alert,
 } from "@mui/material";
-import { Alert } from "@mui/material";
-import PercentIcon from "@mui/icons-material/Percent";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 
 interface StatisticsProps {
   rasterPath: string;
@@ -87,76 +87,65 @@ export default function Statistics({ rasterPath }: StatisticsProps) {
   }
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={3}>
       <Grid>
-        <Card
-          variant="outlined"
-          sx={{ height: "100%", borderRadius: 2, boxShadow: 2 }}
-        >
-          <CardContent>
-            <Stack direction="row" spacing={1} alignItems="center" mb={1}>
-              <ArrowDownwardIcon color="success" />
-              <Typography variant="h6" component="div">
-                Minimum
+        <Card sx={{ borderRadius: 3, boxShadow: 2, overflow: "hidden" }}>
+          <Box sx={{ p: 3, backgroundColor: "primary.light", color: "white" }}>
+            <Typography variant="h5" fontWeight="500">
+              Global Forecast Analytics
+            </Typography>
+          </Box>
+          <Divider />
+          <Grid container>
+            <Grid sx={{ p: 3, borderRight: "1px solid #eee" }}>
+              <Typography
+                variant="subtitle2"
+                color="text.secondary"
+                gutterBottom
+              >
+                COVERAGE
               </Typography>
-            </Stack>
-            <Typography variant="h4" color="text.primary" fontWeight="bold">
-              {typeof stats.min === "number"
-                ? `${stats.min.toFixed(2)}`
-                : "N/A"}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" mt={1}>
-              Lowest landslide probability
-            </Typography>
-          </CardContent>
-        </Card>
-      </Grid>
-
-      <Grid>
-        <Card
-          variant="outlined"
-          sx={{ height: "100%", borderRadius: 2, boxShadow: 2 }}
-        >
-          <CardContent>
-            <Stack direction="row" spacing={1} alignItems="center" mb={1}>
-              <ArrowUpwardIcon color="error" />
-              <Typography variant="h6" component="div">
-                Maximum
+              <Typography variant="h4" fontWeight="medium">
+                {typeof stats.valid_percent === "number"
+                  ? `${stats.valid_percent.toFixed(2)}%`
+                  : "N/A"}
               </Typography>
-            </Stack>
-            <Typography variant="h4" color="text.primary" fontWeight="bold">
-              {typeof stats.max === "number"
-                ? `${stats.max.toFixed(2)}`
-                : "N/A"}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" mt={1}>
-              Highest landslide probability
-            </Typography>
-          </CardContent>
-        </Card>
-      </Grid>
-
-      <Grid>
-        <Card
-          variant="outlined"
-          sx={{ height: "100%", borderRadius: 2, boxShadow: 2 }}
-        >
-          <CardContent>
-            <Stack direction="row" spacing={1} alignItems="center" mb={1}>
-              <PercentIcon color="primary" />
-              <Typography variant="h6" component="div">
-                Coverage
+            </Grid>
+            <Grid sx={{ p: 3, borderRight: "1px solid #eee" }}>
+              <Typography
+                variant="subtitle2"
+                color="text.secondary"
+                gutterBottom
+              >
+                MIN PROBABILITY
               </Typography>
-            </Stack>
-            <Typography variant="h4" color="text.primary" fontWeight="bold">
-              {typeof stats.valid_percent === "number"
-                ? `${stats.valid_percent.toFixed(2)}%`
-                : "N/A"}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" mt={1}>
-              Total global area with a forecast.
-            </Typography>
-          </CardContent>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Typography variant="h4" fontWeight="medium">
+                  {typeof stats.min === "number"
+                    ? `${stats.min.toFixed(2)}`
+                    : "N/A"}
+                </Typography>
+                <TrendingDownIcon color="success" sx={{ ml: 1 }} />
+              </Box>
+            </Grid>
+            <Grid sx={{ p: 3 }}>
+              <Typography
+                variant="subtitle2"
+                color="text.secondary"
+                gutterBottom
+              >
+                MAX PROBABILITY
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Typography variant="h4" fontWeight="medium">
+                  {typeof stats.max === "number"
+                    ? `${stats.max.toFixed(2)}`
+                    : "N/A"}
+                </Typography>
+                <TrendingUpIcon color="error" sx={{ ml: 1 }} />
+              </Box>
+            </Grid>
+          </Grid>
         </Card>
       </Grid>
     </Grid>
