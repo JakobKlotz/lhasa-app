@@ -52,11 +52,9 @@ export default function ForecastMap({
 
     useEffect(() => {
       if (map) {
-        console.log("Fetching bounds from:", boundsUrl);
         fetch(boundsUrl)
           .then((response) => response.json())
           .then((data) => {
-            console.log("Bounds data:", data);
             if (data && data.bounds) {
               const b = data.bounds;
               // Leaflet bounds:
