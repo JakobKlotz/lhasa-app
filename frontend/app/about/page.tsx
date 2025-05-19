@@ -48,13 +48,15 @@ export default function About() {
       <Divider />
 
       <h2>How to Use</h2>
-      <p>To view the landslide risk forecast:</p>
-      <ol>
-        <li>Select a region from the dropdown menu.</li>
-        <li>Choose a date using the date picker.</li>
-      </ol>
-
+      <p>By default, the latest available forecast is visualized.</p>
+      
       <Divider />
+      <p>
+        The calendar allows you to select a specific date for which you want to
+        view the forecast. If no data is available, the specific date is 
+        disabled in the calendar.
+      </p>
+
       <p>
         <TextHighlighter color="secondary" heightPercentage={40}>
           Important Note:
@@ -68,8 +70,9 @@ export default function About() {
 
       <h3>Map</h3>
       <p>
-        The map shows the predicted landslide risk for your chosen region and
-        date. The risk is shown as a probability.
+        The map shows the predicted landslide risk as probability. Choose a 
+        different basemap or change the opacity of the overly with the {" "}
+        <b>customization options</b> in the bottom left corner of the map.
       </p>
 
       <h3>Data</h3>
@@ -105,6 +108,19 @@ export default function About() {
           </Link>{" "}
           - Serves as the backend to fetch and serve LHASA data.
         </li>
+          <ul>
+            <li>
+              <Link
+                href="https://cogeotiff.github.io/rio-tiler/"
+                target="_blank"
+                rel="noopener noreferrer"
+                color="secondary"
+              >
+                rio-tiler
+              </Link>{" "}
+              - To dynamically tile and serve LHASA data.
+            </li>
+          </ul>
         <li>
           <Link
             href="https://nextjs.org/"
@@ -116,17 +132,30 @@ export default function About() {
           </Link>{" "}
           - A React framework for building the frontend.
         </li>
-        <li>
-          <Link
-            href="https://mui.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            color="primary"
-          >
-            Material-UI
-          </Link>{" "}
-          - To build the user interface.
-        </li>
+        <ul>
+          <li>
+            <Link
+              href="https://mui.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              color="secondary"
+            >
+              Material-UI
+            </Link>{" "}
+            - To build the user interface.
+          </li>
+          <li>
+            <Link
+              href="https://react-leaflet.js.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              color="secondary"
+            >
+              (React) Leaflet
+            </Link>{" "}
+            - For the map.
+          </li>
+        </ul>
         <li>
           <Link
             href="https://www.docker.com/"
