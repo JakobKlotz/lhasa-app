@@ -38,7 +38,8 @@ export default function MapLegend() {
         backgroundColor: "rgba(255, 255, 255, 0.8)",
       }}
     >
-      <Typography variant="subtitle2" gutterBottom>
+      {/* Set Typography text to black no matter the selected theme */}
+      <Typography variant="subtitle2" color="black" gutterBottom>
         Landslide Hazard Probability
       </Typography>
       {colormapData.map((item) => (
@@ -55,7 +56,7 @@ export default function MapLegend() {
               border: "1px solid #ccc",
             }}
           />
-          <Typography variant="caption">
+          <Typography variant="caption" color="black">
             {item.label} ({item.valueRange})
           </Typography>
         </Box>
