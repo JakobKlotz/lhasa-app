@@ -6,9 +6,13 @@ import {
   CardContent,
   Typography,
   LinearProgress,
+  Grid,
+  Stack,
 } from "@mui/material";
 import { Alert } from "@mui/material";
-
+import PercentIcon from "@mui/icons-material/Percent";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 
 interface StatisticsProps {
   rasterPath: string;
@@ -17,7 +21,8 @@ interface StatisticsProps {
 
 interface RasterStats {
   valid_percent: number;
-  // TODO add other stats
+  min: number;
+  max: number;
 }
 
 export default function Statistics({ rasterPath }: StatisticsProps) {
@@ -51,7 +56,7 @@ export default function Statistics({ rasterPath }: StatisticsProps) {
     return (
       <Card>
         <CardContent style={{ textAlign: "center" }}>
-          <LinearProgress/>
+          <LinearProgress />
         </CardContent>
       </Card>
     );
@@ -82,18 +87,78 @@ export default function Statistics({ rasterPath }: StatisticsProps) {
   }
 
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h6" component="div">
-          Total Coverage (%)
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {/* Check if valid_percent exists before trying to display it */}
-          {typeof stats.valid_percent === "number"
-            ? `${stats.valid_percent.toFixed(2)}%`
-            : "N/A"}
-        </Typography>
-      </CardContent>
-    </Card>
+    <Grid container spacing={2}>
+      <Grid>
+        <Card
+          variant="outlined"
+          sx={{ height: "100%", borderRadius: 2, boxShadow: 2 }}
+        >
+          <CardContent>
+            <Stack direction="row" spacing={1} alignItems="center" mb={1}>
+              <ArrowDownwardIcon color="success" />
+              <Typography variant="h6" component="div">
+                Minimum
+              </Typography>
+            </Stack>
+            <Typography variant="h4" color="text.primary" fontWeight="bold">
+              {typeof stats.min === "number"
+                ? `${stats.min.toFixed(2)}`
+                : "N/A"}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" mt={1}>
+              Lowest landslide probability
+            </Typography>
+          </CardContent>
+        </Card>
+      </Grid>
+
+      <Grid>
+        <Card
+          variant="outlined"
+          sx={{ height: "100%", borderRadius: 2, boxShadow: 2 }}
+        >
+          <CardContent>
+            <Stack direction="row" spacing={1} alignItems="center" mb={1}>
+              <ArrowUpwardIcon color="error" />
+              <Typography variant="h6" component="div">
+                Maximum
+              </Typography>
+            </Stack>
+            <Typography variant="h4" color="text.primary" fontWeight="bold">
+              {typeof stats.max === "number"
+                ? `${stats.max.toFixed(2)}`
+                : "N/A"}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" mt={1}>
+              Highest landslide probability
+            </Typography>
+          </CardContent>
+        </Card>
+      </Grid>
+
+      <Grid>
+        <Card
+          variant="outlined"
+          sx={{ height: "100%", borderRadius: 2, boxShadow: 2 }}
+        >
+          <CardContent>
+            <Stack direction="row" spacing={1} alignItems="center" mb={1}>
+              <PercentIcon color="primary" />
+              <Typography variant="h6" component="div">
+                Coverage
+              </Typography>
+            </Stack>
+            <Typography variant="h4" color="text.primary" fontWeight="bold">
+              {typeof stats.valid_percent === "number"
+                ? `${stats.valid_percent.toFixed(2)}%`
+                : "N/A"}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" mt={1}>
+              Total global area with a forecast.
+            </Typography>
+          </CardContent>
+        </Card>
+      </Grid>
+    </Grid>
   );
 }

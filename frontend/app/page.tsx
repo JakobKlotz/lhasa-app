@@ -12,6 +12,10 @@ import {
   Alert,
   Slider,
   InputLabel,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  IconButton,
 } from "@mui/material";
 import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
 import dayjs, { Dayjs } from "dayjs";
@@ -29,6 +33,9 @@ import LayersIcon from "@mui/icons-material/Layers";
 import OpacityIcon from "@mui/icons-material/Opacity";
 import Popover from "@mui/material/Popover";
 import MapLegend from "./components/MapLegend";
+import Statistics from "./components/Statistics";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import CloseIcon from "@mui/icons-material/Close";
 
 // marks for the slider
 const marks = [
@@ -62,6 +69,7 @@ export default function Home() {
   const [openSpeedDial, setOpenSpeedDial] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [activeControl, setActiveControl] = useState<string | null>(null);
+  const [statsDialogOpen, setStatsDialogOpen] = useState(false);
 
   const handleSpeedDialClose = () => {
     setOpenSpeedDial(false);
@@ -160,14 +168,12 @@ export default function Home() {
               gap: 2,
             }}
           >
-            <Typography variant="h6">Landslide Forecasting</Typography>
-            <Divider />
-
             <Typography variant="caption" sx={{ mt: 1, mb: -3 }}>
               Creation date of forecast
             </Typography>
 
             <DateCalendar
+              sx={{ mb: -3 }}
               value={selectedDate}
               onChange={(newValue) => setSelectedDate(newValue)}
               shouldDisableDate={shouldDisableDate}
@@ -182,6 +188,44 @@ export default function Home() {
             >
               Display Forecast
             </Button>
+
+            <Divider />
+
+            {tifFilename && (
+              <>
+                <Button
+                  variant="outlined"
+                  startIcon={<BarChartIcon />}
+                  onClick={() => setStatsDialogOpen(true)}
+                  sx={{ mt: 1 }}
+                >
+                  View Statistics
+                </Button>
+
+                <Dialog
+                  sx={{ p: 2 }}
+                  open={statsDialogOpen}
+                  onClose={() => setStatsDialogOpen(false)}
+                >
+                  <DialogTitle>
+                    Global Forecast Statistics:
+                    <br />
+                    Date selected: {selectedDate?.format("DD-MM-YYYY")}
+                    <IconButton
+                      aria-label="close"
+                      onClick={() => setStatsDialogOpen(false)}
+                      sx={{ position: "absolute", right: 8, top: 8 }}
+                    >
+                      <CloseIcon />
+                    </IconButton>
+                  </DialogTitle>
+                  <DialogContent dividers>
+                    {/* Actual statistics presented as info cards */}
+                    <Statistics rasterPath={tifFilename} />
+                  </DialogContent>
+                </Dialog>
+              </>
+            )}
           </Box>
         </Paper>
         {/* Right Paper for Plot/Map */}
