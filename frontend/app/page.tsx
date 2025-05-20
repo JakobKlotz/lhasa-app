@@ -117,7 +117,7 @@ export default function Home() {
           }
         }
       } catch (err) {
-        setError("Error fetching initial data");
+        setError("Error fetching initial data. Try reloading the page.");
       }
     };
     loadInitialData();
