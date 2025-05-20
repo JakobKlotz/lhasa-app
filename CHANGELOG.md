@@ -37,8 +37,8 @@ changes were made to both the backend and frontend:
     - The `ForeCast` class handling the plotting of European states was 
         marked as deprecated as well.
     
-    > [!NOTE]
-    > Both endpoints and the `ForeCast` class will be removed in upcoming versions.
+> [!NOTE]
+> Both endpoints and the `ForeCast` class will be removed in upcoming versions.
     
 - **Frontend**:
     - Removed all UI elements related to the selection of European states,
