@@ -1,5 +1,57 @@
 # Changelog
 
+## Version - 0.3.0
+
+With the help of a dynamic tiling system, the landslide hazard map is now
+available **globally**!
+
+### ✨ Features
+
+- **Backend**:
+    - Added a new endpoint `/tiles` for dynamic tiling of a GeoTIFF file.
+    - `/statistics` returns statistics of a GeoTIFF file.
+    - `/bounds` simply returns the bounds of a GeoTIFF file.
+
+- **Frontend**:
+    - A global map is now available to visualize the LHASA forecast.
+        - Customization options allow to set the opacity of the forecast layer
+            and the background map (basemap).
+    - A newly introduced `View Statistics` button allows to view rudimentary 
+        statistics of a selected LHASA forecast.
+    - By default, the latest available forecast is loaded on startup.
+    - Upon the selection of a specific date, all page content is automatically
+        updated, which should improve the user experience. Additional UI 
+        elements, provide user feedback as to which date is currently selected.
+
+### 🧹 Chores
+
+Since, the app no longer provides a selector for European states, a couple of 
+changes were made to both the backend and frontend:
+
+- **Backend**:
+    - API:
+        - Marked the `/forecast` endpoint as deprecated, which was used to 
+            visualize the forecast for a specific European state with `plotly`.
+        - Marked the `/countries` endpoint as deprecated (lists all available 
+            European states).
+    - The `ForeCast` class handling the plotting of European states was 
+        marked as deprecated as well.
+    
+    > [!NOTE]
+    > Both endpoints and the `ForeCast` class will be removed in upcoming versions.
+    
+- **Frontend**:
+    - Removed all UI elements related to the selection of European states,
+        such as the dropdown menu and the corresponding map.
+
+### ⬆ Dependencies
+
+- **Backend**:
+    - Added `rio-tiler` to handle the dynamic tiling of GeoTIFF files.
+- **Frontend**:
+    - Added `react-leaflet` and `leaflet` to add the global map including the
+        forecast layer.
+
 ## Version - 0.2.0
 
 Overhaul to both the backend and frontend of the app. Biggest changes are:
