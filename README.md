@@ -5,8 +5,9 @@
 # LHASA app
 
 Assess *rainfall-triggered landslide risk* with an easy-to-use web app.
+Explore a global landslide risk map!
 
-![App screenshot](screenshot/screen[0-2-0].png)
+![App screenshot](screenshot/screen[0-3-0].png)
 
 ## Getting Started
 
@@ -26,8 +27,8 @@ The app is available at `localhost:3000`. That's it! 🚀
 
 The LHASA app is split into two main components, backend and frontend.
 
-- **Backend**: A FastAPI server that fetches and manages the LHASA 
-  predictions and maps. Prediction data is automatically kept up to date!
+- **Backend**: An API (FastAPI) that fetches and manages the LHASA predictions.
+  It dynamically serves the predictions as tiles.
 - **Frontend**: A Next.js app that displays the maps and provides a user
   interface.
 

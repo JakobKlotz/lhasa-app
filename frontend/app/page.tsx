@@ -2,107 +2,139 @@
 
 import { useState, useEffect } from "react";
 import * as React from "react";
-import dynamic from "next/dynamic";
 import {
   Button,
-  TextField,
   Box,
   Container,
-  Alert,
-  CircularProgress,
   Paper,
-  LinearProgress,
   Typography,
   Divider,
+  Alert,
+  Slider,
+  InputLabel,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  IconButton,
+  Chip,
 } from "@mui/material";
-import Autocomplete from "@mui/material/Autocomplete";
-import PlayArrowOutlinedIcon from "@mui/icons-material/PlayArrowOutlined";
 import dayjs, { Dayjs } from "dayjs";
 
-import { fetchCountries } from "./api/countries";
-import { fetchForecast } from "./api/forecast";
 import { fetchAvailableFiles, AvailableFilesResponse } from "./api/files";
-import TravelExploreOutlinedIcon from "@mui/icons-material/TravelExploreOutlined";
-import TextHighlighter from "./components/TextHighlighter";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers";
+import ForecastMap, { BasemapSelector, baseMaps } from "./components/Map";
+import SpeedDial from "@mui/material/SpeedDial";
+import SpeedDialIcon from "@mui/material/SpeedDialIcon";
+import SpeedDialAction from "@mui/material/SpeedDialAction";
+import TuneIcon from "@mui/icons-material/Tune";
+import LayersIcon from "@mui/icons-material/Layers";
+import OpacityIcon from "@mui/icons-material/Opacity";
+import Popover from "@mui/material/Popover";
+import MapLegend from "./components/MapLegend";
+import Statistics from "./components/Statistics";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import CloseIcon from "@mui/icons-material/Close";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
-const Plot = dynamic(() => import("react-plotly.js"), {
-  ssr: true,
-  loading: () => <LinearProgress />,
-}) as any;
+// marks for the slider
+const marks = [
+  {
+    value: 0,
+    label: "0%",
+  },
+  {
+    value: 100,
+    label: "100%",
+  },
+];
 
 export default function Home() {
-  const [nutsId, setNutsId] = useState("");
-  const [plotData, setPlotData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [countries, setCountries] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [availableFiles, setAvailableFiles] =
     useState<AvailableFilesResponse | null>(null);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
+  const [activeDate, setActiveDate] = useState<Dayjs | null>(null); // Track currently displayed date
+  const [tifFilename, setTifFilename] = useState<string | null>(null);
+  const [opacity, setOpacity] = useState<number>(0.55);
+  const [selectedBasemapIndex, setSelectedBasemapIndex] = useState(() => {
+    // Initialize based on theme or default
+    const initialMode =
+      typeof window !== "undefined"
+        ? localStorage.getItem("themeMode")
+        : "dark";
+    return initialMode === "light"
+      ? baseMaps.findIndex((bm) => bm.name === "carto-light")
+      : baseMaps.findIndex((bm) => bm.name === "carto-dark");
+  });
+  const [openSpeedDial, setOpenSpeedDial] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [activeControl, setActiveControl] = useState<string | null>(null);
+  const [statsDialogOpen, setStatsDialogOpen] = useState(false);
+
+  const handleSpeedDialClose = () => {
+    setOpenSpeedDial(false);
+  };
+
+  const handleSpeedDialOpen = () => {
+    setOpenSpeedDial(true);
+  };
+
+  const handleControlClick = (
+    event: React.MouseEvent<HTMLElement>,
+    control: string,
+  ) => {
+    setAnchorEl(event.currentTarget as HTMLElement);
+    setActiveControl(control);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+    setActiveControl(null);
+  };
 
   useEffect(() => {
     const loadInitialData = async () => {
       try {
-        // Fetch countries
-        const fetchedCountries = await fetchCountries();
-        setCountries(fetchedCountries);
-        const defaultCountry = fetchedCountries.find(
-          (country) => country.code === "AT",
-        );
-        if (defaultCountry) {
-          setSelectedCountry(defaultCountry);
-          setNutsId(defaultCountry.code);
-        }
-
         // Fetch available files data
         const filesData = await fetchAvailableFiles();
         setAvailableFiles(filesData);
+
+        // Load the latest available TIF file on startup
+        if (filesData && Object.keys(filesData).length > 0) {
+          const availableDates = Object.keys(filesData).sort(
+            (a, b) => dayjs(b).valueOf() - dayjs(a).valueOf(),
+          );
+          const latestDateString = availableDates[0];
+          const latestFileInfo = filesData[latestDateString];
+
+          if (latestFileInfo) {
+            const latestDayjs = dayjs(latestDateString);
+            setSelectedDate(latestDayjs);
+            setActiveDate(latestDayjs);
+            setTifFilename(latestFileInfo.file_name);
+          }
+        }
       } catch (err) {
-        setError("Error fetching initial data");
-        console.error(err);
+        setError("Error fetching initial data. Try reloading the page.");
       }
     };
     loadInitialData();
   }, []);
 
-  const handleForecast = async () => {
-    // Ensure a date is selected and file data is available
-    if (!selectedDate || !availableFiles) {
-      setError("Please select an available date.");
-      return;
-    }
+  // Handle date selection and auto-update map
+  const handleDateChange = (newDate: Dayjs | null) => {
+    setSelectedDate(newDate);
+    if (newDate && availableFiles) {
+      const dateString = newDate.format("YYYY-MM-DD");
+      const fileInfo = availableFiles[dateString];
 
-    const dateString = selectedDate.format("YYYY-MM-DD");
-    const fileInfo = availableFiles[dateString];
-
-    if (!fileInfo) {
-      setError("Selected date does not have corresponding file data.");
-      console.error(
-        "No file info found for date:",
-        dateString,
-        "in",
-        availableFiles,
-      );
-      return;
-    }
-
-    const tifFilename = fileInfo.file_name; // Get the filename
-
-    try {
-      setLoading(true);
-      setError("");
-      // Pass nutsId and the tif filename
-      const data = await fetchForecast(nutsId, tifFilename);
-      setPlotData(data);
-    } catch (err) {
-      setError("Error fetching forecast data");
-      console.error(err);
-    } finally {
-      setLoading(false);
+      if (fileInfo) {
+        setTifFilename(fileInfo.file_name);
+        setActiveDate(newDate);
+        setError(null);
+      }
     }
   };
 
@@ -114,9 +146,16 @@ export default function Home() {
     return !availableFiles.hasOwnProperty(dateString);
   };
 
+  const handleBasemapChange = (index: number) => {
+    setSelectedBasemapIndex(index);
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Container maxWidth="xl" sx={{ display: "flex", gap: 2, mt: 2 }}>
+      <Container
+        maxWidth="xl"
+        sx={{ display: "flex", gap: 2, mt: 2, height: "80vh", width: "100%" }}
+      >
         {/* Left Paper for Controls */}
         <Paper elevation={1} sx={{ p: 2, width: "auto" }}>
           <Box
@@ -127,143 +166,178 @@ export default function Home() {
               gap: 2,
             }}
           >
-            <Typography variant="h6">Landslide Forecasting</Typography>
-            <Divider />
-
-            {/* taken from https://mui.com/material-ui/react-autocomplete/#country-select */}
-            <Autocomplete
-              id="country-select-demo"
-              value={selectedCountry}
-              options={countries}
-              sx={{ mt: 1 }}
-              autoHighlight
-              getOptionLabel={(option) => option.label}
-              onChange={(e, value) => {
-                setSelectedCountry(value);
-                setNutsId(value?.code);
-              }}
-              size="medium"
-              renderOption={(props, option) => {
-                const { key, ...optionProps } = props;
-                return (
-                  <Box
-                    key={key}
-                    component="li"
-                    sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-                    {...optionProps}
-                  >
-                    <img
-                      loading="lazy"
-                      width="20"
-                      srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
-                      src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
-                      alt=""
-                    />
-                    {option.label} ({option.code})
-                  </Box>
-                );
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Select a country"
-                  slotProps={{
-                    htmlInput: {
-                      ...params.inputProps,
-                      autoComplete: "new-password",
-                    },
-                  }}
-                />
-              )}
-            />
-
             <Typography variant="caption" sx={{ mt: 1, mb: -3 }}>
               Creation date of forecast
             </Typography>
 
             <DateCalendar
+              sx={{ mb: -3 }}
               value={selectedDate}
-              onChange={(newValue) => setSelectedDate(newValue)}
+              onChange={handleDateChange}
               shouldDisableDate={shouldDisableDate}
             />
 
-            <Button
-              variant="contained"
-              onClick={handleForecast}
-              // Disable if no country, no date selected, or already loading
-              disabled={!nutsId || !selectedDate || loading}
-            >
-              {loading ? (
-                <>
-                  <CircularProgress size={20} color="inherit" />
-                </>
-              ) : (
-                <>
-                  <PlayArrowOutlinedIcon color="secondary" />
-                </>
-              )}
-            </Button>
+            <Divider />
+
+            {tifFilename && (
+              <>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    p: 2,
+                    border: "1px solid #e0e0e0",
+                    borderRadius: 1,
+                    bgcolor: "background.paper",
+                  }}
+                >
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    Forecast Analysis
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    startIcon={<BarChartIcon />}
+                    onClick={() => setStatsDialogOpen(true)}
+                    sx={{ mt: 1 }}
+                  >
+                    View Statistics
+                  </Button>
+
+                  <Dialog
+                    sx={{ p: 2 }}
+                    open={statsDialogOpen}
+                    onClose={() => setStatsDialogOpen(false)}
+                  >
+                    <DialogTitle
+                      sx={{ display: "flex", alignItems: "center" }}
+                    >
+                      <BarChartIcon sx={{ mr: 1 }} />
+                      Selected: {activeDate?.format("DD-MM-YYYY")}
+                      <IconButton
+                        aria-label="close"
+                        onClick={() => setStatsDialogOpen(false)}
+                        sx={{ position: "absolute", right: 8, top: 8 }}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </DialogTitle>
+                    <DialogContent dividers>
+                      {/* Actual statistics presented as info cards */}
+                      <Statistics rasterPath={tifFilename} />
+                    </DialogContent>
+                  </Dialog>
+                </Box>
+              </>
+            )}
           </Box>
         </Paper>
         {/* Right Paper for Plot/Map */}
         <Paper
           elevation={3}
-          sx={{ p: 1, flex: 1, height: "calc(100vh - 250px)" }}
+          sx={{ p: 1, flex: 1, height: "100%", position: "relative" }}
         >
           {error && (
-            <Alert severity="error" sx={{ mb: 1 }}>
-              {error}
-            </Alert>
-          )}
-          {loading && <LinearProgress />}
-          {!plotData && !loading && (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "100%",
-                height: "100%", // Ensure the centering box takes up the full space
-              }}
-            >
-              <TravelExploreOutlinedIcon
-                sx={{
-                  fontSize: "3rem",
-                  color: "primary.main",
-                  mr: 2,
-                }}
-              />
-              <TextHighlighter
-                color="secondary"
-                heightPercentage={65}
-                borderRadius={5}
-              >
-                <Typography variant="h6">
-                  Select a country and date to get started
-                </Typography>
-              </TextHighlighter>
+            <Box>
+              <Alert variant="outlined" severity="error">
+                {error}
+              </Alert>
             </Box>
           )}
-          {plotData && (
-            <Box
+          {/* Shows simply the BaseMap if tifFilename is null */}
+          <ForecastMap
+            rasterPath={tifFilename}
+            opacity={opacity}
+            basemapUrl={baseMaps[selectedBasemapIndex].url}
+          />
+          <MapLegend />
+
+          {/* Display selected date as chip */}
+          {activeDate && (
+            <Chip
               sx={{
-                display: "flex",
-                justifyContent: "center",
-                width: "100%",
-                height: "100%",
+                position: "absolute",
+                top: 15,
+                left: "50%",
+                transform: "translateX(-50%)",
+                zIndex: 1000,
+                mb: 1,
               }}
+              icon={<CalendarTodayIcon />}
+              color="secondary"
+              label={`Selected: ${activeDate.format("DD-MM-YYYY")}`}
+            />
+          )}
+
+          {/* SpeedDial Box for Map Customization */}
+          <Box
+            sx={{ position: "absolute", zIndex: 1000, left: 16, bottom: 16 }}
+          >
+            <SpeedDial
+              ariaLabel="Map customization options"
+              icon={<SpeedDialIcon icon={<TuneIcon />} />}
+              onClose={handleSpeedDialClose}
+              onOpen={handleSpeedDialOpen}
+              open={openSpeedDial}
+              direction="up"
             >
-              <Box sx={{ width: "100%", height: "100%" }}>
-                <Plot
-                  data={plotData.data}
-                  layout={plotData.layout}
-                  config={plotData.config}
-                  useResizeHandler={true}
-                  style={{ width: "100%", height: "100%" }}
+              <SpeedDialAction
+                key="opacity"
+                icon={<OpacityIcon />}
+                onClick={(e) => handleControlClick(e, "opacity")}
+              />
+              <SpeedDialAction
+                key="basemap"
+                icon={<LayersIcon />}
+                onClick={(e) => handleControlClick(e, "basemap")}
+              />
+            </SpeedDial>
+          </Box>
+
+          <Popover
+            open={Boolean(anchorEl)}
+            anchorEl={anchorEl}
+            onClose={handlePopoverClose}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+          >
+            {activeControl === "opacity" && (
+              <Box sx={{ p: 2, mx: 2, width: "7vw" }}>
+                <InputLabel id="opacity-label">Opacity</InputLabel>
+                <Slider
+                  size="medium"
+                  defaultValue={55}
+                  aria-label="Opacity"
+                  marks={marks}
+                  sx={{ width: "90%", mx: "auto" }}
+                  valueLabelDisplay="auto"
+                  onChange={(event, newValue) => {
+                    const newOpacity = (newValue as number) / 100;
+                    setOpacity(newOpacity);
+                  }}
                 />
               </Box>
-            </Box>
-          )}
+            )}
+
+            {activeControl === "basemap" && (
+              <Box sx={{ flex: 1, p: 2, mx: 2 }}>
+                <BasemapSelector
+                  baseMaps={baseMaps}
+                  selectedIndex={selectedBasemapIndex}
+                  onBasemapChange={(index) => {
+                    handleBasemapChange(index);
+                    handlePopoverClose();
+                  }}
+                />
+              </Box>
+            )}
+          </Popover>
         </Paper>
       </Container>
     </LocalizationProvider>
