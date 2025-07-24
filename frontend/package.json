@@ -14,7 +14,7 @@
     "@mui/icons-material": "^7.1.0",
     "@mui/material": "^7.1.0",
     "@mui/x-date-pickers": "^8.2.0",
-    "axios": "^1.7.9",
+    "axios": "^1.11.0",
     "dayjs": "^1.11.13",
     "leaflet": "^1.9.4",
     "next": "^15.3.4",
