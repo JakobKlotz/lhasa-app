@@ -1,21 +1,17 @@
 import asyncio
-import json
 import logging
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
 
-import geopandas as gpd
 import pandas as pd
-import plotly.utils
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from rio_tiler.io import Reader
 from starlette.responses import Response
 
-from lhasa import Downloader, ForeCast, read_nuts
+from lhasa import Downloader
 
 # Setup logging
 logging.basicConfig(
@@ -24,8 +20,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-nuts: gpd.GeoDataFrame | None = None
-countries: gpd.GeoDataFrame | None = None
 DATA_DIR = Path("data")
 SCHEDULER_MINUTES = 60  # Scheduler interval in minutes
 
@@ -112,24 +106,11 @@ async def check_and_download_latest_data():
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # noqa: ARG001
     """Lifespan event to load initial data."""
-    global countries, nuts
     logger.info("Application startup: Loading initial data...")
     # Ensure data directory exists
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     try:
-        nuts_file = DATA_DIR / "NUTS_RG_20M_2024_4326.geojson"
-        if not nuts_file.exists():
-            logger.warning(f"NUTS file not found at {nuts_file}")
-        else:
-            # prepare countries data
-            nuts = read_nuts(nuts_file)
-            countries = nuts[nuts["LEVL_CODE"] == 0]
-            countries = countries[["NUTS_ID", "NAME_LATN"]]
-            countries = countries.rename(
-                columns={"NUTS_ID": "code", "NAME_LATN": "label"}
-            )
-
         # Add the job to the scheduler, run immediately on startup
         # (trigger='interval' doesn't run instantly)
         await check_and_download_latest_data()  # Run once on startup
@@ -178,12 +159,6 @@ async def root():
     return {"message": "Welcome to the LHASA API"}
 
 
-@app.get("/countries", deprecated=True)
-async def get_countries():
-    """Get list of European countries with their NUTS ID and polygon border."""
-    return JSONResponse(countries.to_dict(orient="records"))
-
-
 @app.get("/files")
 async def get_files(forecast_type: str = "tomorrow"):
     """List all files available for each day with the latest time stamp."""
@@ -215,32 +190,6 @@ async def get_files(forecast_type: str = "tomorrow"):
         ]
         latest_files_per_day = latest_files_per_day.set_index("day", drop=True)
     return latest_files_per_day.to_dict(orient="index")
-
-
-@app.get("/forecast", deprecated=True)
-async def get_forecast(nuts_id: str, tif: str):
-    """Visualize forecast for given NUTS ID and date."""
-    tif = Path("data") / tif
-    if not tif.exists():
-        raise HTTPException(
-            status_code=404, detail=f"Forecast file not found: {tif}"
-        )
-    # Create forecast
-    forecast = ForeCast(tif_path=tif, nuts=nuts)
-    day, forecast_type = tif.name.split("_")
-    day = day.split("T")[0]
-
-    # Generate plot
-    fig = forecast.plot(
-        nuts_id=nuts_id,
-        title=f"Landslide forecast for <i>{nuts_id}</i><br>"
-        f"Forecast created on: {day}",
-    )
-
-    # Convert plot to JSON
-    return JSONResponse(
-        json.loads(plotly.utils.PlotlyJSONEncoder().encode(fig))
-    )
 
 
 @app.get("/bounds")
