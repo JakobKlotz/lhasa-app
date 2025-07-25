@@ -1,6 +1,6 @@
 [project]
 name = "lhasa-app"
-version = "0.3.0"
+version = "0.3.1"
 description = "Process LHASA predictions"
 authors = [
     "JakobKlotz <jakob.klotz@mci.edu>",
@@ -10,14 +10,11 @@ requires-python = ">=3.12"
 dependencies = [
     "apscheduler>=3.11.0",
     "fastapi[standard]>=0.115.8",
-    "geopandas>=1.0.1",
     "httpx>=0.28.1",
     "lxml>=5.3.1",
     "pandas>=2.2.3",
-    "plotly>=6.0.0",
     "rasterio>=1.4.3",
     "rio-tiler>=7.7.0",
-    "shapely>=2.0.7",
     "tqdm>=4.67.1",
 ]
 

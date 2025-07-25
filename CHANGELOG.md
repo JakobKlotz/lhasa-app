@@ -1,5 +1,47 @@
 # Changelog
 
+## Version - 0.3.1
+
+Minor changes to the backend and frontend of the app.
+
+### ✨ Features
+
+**Frontend**:
+
+Slight changes to the statistics dialog:
+
+- Replaced both the minimum and maximum probability values with the 
+    standard deviation and 98% quantile. Since min and max values were not very
+    informative, this change should provide a better understanding of the 
+    forecast data.
+- Added some tooltips to the statistics dialog for a better understanding of 
+    the displayed values.
+
+### 🧹 Chores/Refactoring
+
+**Backend**:
+
+Since release `0.3.0`, the app no longer provides a selector for European states.
+Hence, all related code and files were removed:
+
+- Removed `NUTS_RG_20M_2024_4326.geojson` holding the country borders of 
+    European states.
+- Removed `lhasa/forecast.py` and the `ForeCast` class, which was used to plot 
+    the LHASA forecast for a specific European state.
+- Corresponding and already deprecated endpoints `/forecast` and `/countries` 
+    were removed as well.
+
+### ⬆ Dependencies
+
+- **Backend**:
+    - Removed `plotly`, `geopandas` and `shapely` as they were only used to 
+        plot the LHASA forecast for a specific European state.
+    - Pinned to the latest `uv` version `0.8.3` in the `Dockerfile`.
+
+- **Frontend**:
+    - Upgraded `axios` to `1.11.0` and `form-data` to `4.0.4` to fix a 
+        security vulnerability.
+
 ## Version - 0.3.0
 
 With the help of a dynamic tiling system, the landslide hazard map is now

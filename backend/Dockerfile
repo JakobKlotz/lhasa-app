@@ -1,6 +1,6 @@
 FROM python:3.12-slim-bookworm
-# pin uv version 0.7.2
-COPY --from=ghcr.io/astral-sh/uv:0.7.2 /uv /uvx /bin/
+# pin uv version 0.8.3
+COPY --from=ghcr.io/astral-sh/uv:0.8.3 /uv /uvx /bin/
 
 WORKDIR /app
 
