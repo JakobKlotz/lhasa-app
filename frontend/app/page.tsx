@@ -205,6 +205,7 @@ export default function Home() {
                   </Button>
 
                   <Dialog
+                    maxWidth="md"
                     sx={{ p: 2 }}
                     open={statsDialogOpen}
                     onClose={() => setStatsDialogOpen(false)}

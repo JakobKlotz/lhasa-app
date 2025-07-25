@@ -10,9 +10,12 @@ import {
   Divider,
   Box,
   Alert,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import TrendingDownIcon from "@mui/icons-material/TrendingDown";
+import EqualizerOutlinedIcon from '@mui/icons-material/EqualizerOutlined';
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 interface StatisticsProps {
   rasterPath: string;
@@ -91,20 +94,48 @@ export default function Statistics({ rasterPath }: StatisticsProps) {
       <Grid>
         <Card sx={{ borderRadius: 3, boxShadow: 2, overflow: "hidden" }}>
           <Box sx={{ p: 3, backgroundColor: "primary.light", color: "white" }}>
-            <Typography variant="h5" fontWeight="500">
-              Global Forecast Analytics
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography variant="h5" fontWeight="500">
+                Global Forecast Analytics
+              </Typography>
+              <Tooltip
+                title={"Statistics are calculated from the global " +
+                  "landslide hazard data. They provide insights into the " +
+                  "distribution and variability of landslide probabilities " +
+                  "worldwide."
+                }
+                arrow
+                placement="right-end"
+              >
+                <IconButton size="small" sx={{ ml: 0.5 }}>
+                  <InfoOutlinedIcon fontSize="small" color="action" />
+                </IconButton>
+              </Tooltip>
+            </Box>
           </Box>
           <Divider />
           <Grid container>
             <Grid sx={{ p: 3, borderRight: "1px solid #eee" }}>
-              <Typography
-                variant="subtitle2"
-                color="text.secondary"
-                gutterBottom
-              >
-                COVERAGE
-              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                <Typography
+                  variant="subtitle2"
+                  color="text.secondary"
+                  gutterBottom
+                >
+                  COVERAGE
+                </Typography>
+                <Tooltip
+                  title={"Percentage of the global area that has landslide " +
+                    "risk data available."
+                  }
+                  arrow
+                  placement="top"
+                >
+                  <IconButton size="small" sx={{ ml: 0.5 }}>
+                    <InfoOutlinedIcon fontSize="small" color="action" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
               <Typography variant="h4" fontWeight="medium">
                 {typeof stats.valid_percent === "number"
                   ? `${stats.valid_percent.toFixed(3)}%`
@@ -112,30 +143,60 @@ export default function Statistics({ rasterPath }: StatisticsProps) {
               </Typography>
             </Grid>
             <Grid sx={{ p: 3, borderRight: "1px solid #eee" }}>
-              <Typography
-                variant="subtitle2"
-                color="text.secondary"
-                gutterBottom
-              >
-                STANDARD DEVIATION
-              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                <Typography
+                  variant="subtitle2"
+                  color="text.secondary"
+                  gutterBottom
+                >
+                  STANDARD DEVIATION
+                </Typography>
+                <Tooltip
+                  title={
+                    "Measures how spread out the landslide probability " +
+                    "values are. Higher values indicate more extreme risk " +
+                    "variations worldwide."
+                  }
+                  arrow
+                  placement="top"
+                >
+                  <IconButton size="small" sx={{ ml: 0.5 }}>
+                  <InfoOutlinedIcon fontSize="small" color="action" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Typography variant="h4" fontWeight="medium">
                   {typeof stats.std === "number"
                     ? `${stats.std.toFixed(3)}`
                     : "N/A"}
                 </Typography>
-                <TrendingDownIcon color="success" sx={{ ml: 1 }} />
+                <EqualizerOutlinedIcon sx={{ ml: 1 }} />
               </Box>
             </Grid>
             <Grid sx={{ p: 3 }}>
-              <Typography
-                variant="subtitle2"
-                color="text.secondary"
-                gutterBottom
-              >
-                98% QUANTILE
-              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                <Typography
+                  variant="subtitle2"
+                  color="text.secondary"
+                  gutterBottom
+                >
+                  98% QUANTILE
+                </Typography>
+                <Tooltip
+                  title={"The probability value below which 98% of all " +
+                    "observations areas fall. This represents the upper " +
+                    "extreme of landslide risk, excluding only the top 2% " +
+                    "most extreme values."
+                  }
+                  arrow
+                  placement="top"
+                >
+                  <IconButton size="small" sx={{ ml: 0.5 }}>
+                    <InfoOutlinedIcon fontSize="small" color="action" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Typography variant="h4" fontWeight="medium">
                   {typeof stats.percentile_98 === "number"
