@@ -21,8 +21,8 @@ interface StatisticsProps {
 
 interface RasterStats {
   valid_percent: number;
-  min: number;
-  max: number;
+  std: number;
+  percentile_98: number;
 }
 
 export default function Statistics({ rasterPath }: StatisticsProps) {
@@ -107,7 +107,7 @@ export default function Statistics({ rasterPath }: StatisticsProps) {
               </Typography>
               <Typography variant="h4" fontWeight="medium">
                 {typeof stats.valid_percent === "number"
-                  ? `${stats.valid_percent.toFixed(2)}%`
+                  ? `${stats.valid_percent.toFixed(3)}%`
                   : "N/A"}
               </Typography>
             </Grid>
@@ -117,12 +117,12 @@ export default function Statistics({ rasterPath }: StatisticsProps) {
                 color="text.secondary"
                 gutterBottom
               >
-                MIN PROBABILITY
+                STANDARD DEVIATION
               </Typography>
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Typography variant="h4" fontWeight="medium">
-                  {typeof stats.min === "number"
-                    ? `${stats.min.toFixed(2)}`
+                  {typeof stats.std === "number"
+                    ? `${stats.std.toFixed(3)}`
                     : "N/A"}
                 </Typography>
                 <TrendingDownIcon color="success" sx={{ ml: 1 }} />
@@ -134,12 +134,12 @@ export default function Statistics({ rasterPath }: StatisticsProps) {
                 color="text.secondary"
                 gutterBottom
               >
-                MAX PROBABILITY
+                98% QUANTILE
               </Typography>
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Typography variant="h4" fontWeight="medium">
-                  {typeof stats.max === "number"
-                    ? `${stats.max.toFixed(2)}`
+                  {typeof stats.percentile_98 === "number"
+                    ? `${stats.percentile_98.toFixed(3)}`
                     : "N/A"}
                 </Typography>
                 <TrendingUpIcon color="error" sx={{ ml: 1 }} />
