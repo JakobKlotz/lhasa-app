@@ -1,5 +1,20 @@
 # Changelog
 
+## Version - 0.3.2
+
+Fixed security vulnerabilities.
+
+### ⬆ Dependencies
+
+**Frontend**:
+
+- Updated `next.js` to `15.5.2` in order to resolve the dependabot alerts.
+
+**Backend**:
+
+- Dockerfile: Switched from `python:3.12-slim-bookworm` to `python:3.12-slim`
+ to resolve a vulnerability of high severity. 
+
 ## Version - 0.3.1
 
 Minor changes to the backend and frontend of the app.
