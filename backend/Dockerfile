@@ -33,11 +33,17 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 FROM debian:trixie-slim
 
 # Rasterio needs libexpat1, ca-certificates to verify SSL
-RUN apt-get update && apt-get install -y libexpat1 ca-certificates \
-    && update-ca-certificates
-
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    libexpat1 ca-certificates curl \
+    && update-ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 # Copy the Python version
 COPY --from=builder --chown=python:python /python /python
+
+# Add a non-root user to run the application
+RUN groupadd --system --gid 1001 app
+RUN useradd --system -g app --uid 1001 app
 
 # Copy the application from the builder
 COPY --from=builder --chown=app:app /app /app
@@ -49,5 +55,8 @@ ENV PATH="/app/.venv/bin:$PATH"
 WORKDIR /app
 
 EXPOSE 8000
+
+# Switch to non-root user
+USER app
 
 CMD ["fastapi", "run", "app/main.py", "--host", "0.0.0.0", "--port", "8000"]
