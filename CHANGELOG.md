@@ -1,5 +1,30 @@
 # Changelog
 
+## Version - 0.3.3
+
+Added a multistage Dockerfile to reduce the image size of the backend service
+(the API).
+
+### ⬆ Dependencies
+
+**Backend**:
+
+- Upgraded the Python version to `3.13`.
+
+### 🧹 Chores/Refactoring
+
+**Backend**
+
+- Multistage Dockerfile:
+    - Replaced the single-stage image with a multistage build (builder + runtime) 
+    to separate build-time dependencies from the final runtime image, which 
+    significantly reduces the final image size.
+    - Added a non-root user to run the API.
+- Renamed the API directory and entry file to better align with the official 
+    FastAPI recommendations (adopting the conventional `app/main.py` layout) to 
+    improve project structure and clarity.
+- Updated the `pre-commit` hooks
+
 ## Version - 0.3.2
 
 Fixed security vulnerabilities.
@@ -13,7 +38,7 @@ Fixed security vulnerabilities.
 **Backend**:
 
 - Dockerfile: Switched from `python:3.12-slim-bookworm` to `python:3.12-slim`
- to resolve a vulnerability of high severity. 
+    to resolve a vulnerability of high severity. 
 
 ## Version - 0.3.1
 
