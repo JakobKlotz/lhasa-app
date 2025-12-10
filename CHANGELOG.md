@@ -1,5 +1,22 @@
 # Changelog
 
+## Version - 0.3.4
+
+This release contains solely dependency updates to both the backend and
+frontend.
+
+### ⬆ Dependencies
+
+**Backend**:
+
+- Pin to Python version `3.13.*` (within `pyproject.toml`).
+- Update all dependencies.
+
+**Frontend**:
+
+- Update `next.js` to `16.0.8` in order to resolve security vulnerabilities.
+- Updated all remaining frontend dependencies as well.
+
 ## Version - 0.3.3
 
 Added a multistage Dockerfile to reduce the image size of the backend service
